@@ -26,7 +26,7 @@ Post messages, like content, and connect with others - all from your pocket devi
 
 #### Option 2: M5Launcher
 1. On your M5Cardputer, open **M5Launcher**
-2. Go to **"Apps"** section
+2. Go to **"OTA"** section
 3. Find **"MicroCast"**
 4. Click **"Install"**
 5. Wait for download

@@ -1,0 +1,47 @@
+# Arduino IDE
+*.hex
+*.eep
+*.elf
+*.map
+*.sym
+*.lss
+*.lst
+*.tmp
+
+# Build directories
+build/
+.build/
+*.bin
+
+# IDE specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Secrets (DO NOT COMMIT)
+secrets.h
+config.h
+credentials.txt
+
+# Backups
+*.bak
+*.backup
+*~
+
+# Compiled Object files
+*.o
+*.obj
+
+# Temporary files
+*.tmp
+*.temp

@@ -585,15 +585,7 @@ void ensureDevice() {
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
         continue;
       }
-      // Try to register
-      if (!wifiOK) {
-        author = "user_" + deviceId.substring(0, 6);
-        prefs.putString("author", author);
-        showMessage("No WiFi", "WiFi not connected!", "Temp name: " + author, "Connect WiFi & press [U]", 3);
-        while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
-        break;
-      }
-      
+      // Try to register (WiFi already connected at this point)
       if (apiRegister(newAuthor)) {
         showMessage("Success!", "Username registered:", author, "", 1);
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
@@ -890,7 +882,6 @@ void drawUI() {
   d.print("[Fn+Enter] Post, [R] Refresh Feed");
 }
 
-// ====== Arduino ======
 void setup() {
   auto cfg=M5.config(); M5Cardputer.begin(cfg,true);
   M5Cardputer.Display.setRotation(1); M5Cardputer.Display.setTextSize(1);
@@ -898,8 +889,10 @@ void setup() {
   // Показываем заставку
   showSplashScreen();
   
-  ensureDevice();
+  // ВАЖНО: сначала WiFi, потом регистрация!
   wifiLoadOrOnboard();
+  ensureDevice();
+  
   if (wifiOK) {
     apiStats();
     apiFeed();

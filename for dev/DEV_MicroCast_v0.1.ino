@@ -93,6 +93,62 @@ void drawBox(int x, int y, int w, int h, uint16_t color) {
   d.drawRect(x, y, w, h, color);
 }
 
+// Красивое окно с сообщением
+// type: 0=info, 1=success, 2=error, 3=warning
+void showMessage(const String& title, const String& line1, const String& line2 = "", const String& line3 = "", int type = 0) {
+  auto& d = M5Cardputer.Display;
+  d.fillScreen(0x0000);
+  d.setTextSize(1);
+  
+  // Определяем цвет по типу
+  uint16_t boxColor, titleColor;
+  switch(type) {
+    case 1: boxColor = 0x07E0; titleColor = 0x07E0; break; // success - зеленый
+    case 2: boxColor = 0xF800; titleColor = 0xF800; break; // error - красный
+    case 3: boxColor = 0xFFE0; titleColor = 0xFFE0; break; // warning - желтый
+    default: boxColor = 0x07FF; titleColor = 0x07FF; break; // info - cyan
+  }
+  
+  // Заголовок
+  d.setCursor(0, 0);
+  d.setTextColor(titleColor, 0x0000);
+  d.println(title);
+  d.setTextColor(0xFFFF, 0x0000);
+  d.println("========================================");
+  
+  // Рамка с сообщением
+  int boxHeight = 60;
+  if (line3.length() > 0) boxHeight = 70;
+  else if (line2.length() == 0) boxHeight = 30;
+  
+  drawBox(4, 25, 232, boxHeight, boxColor);
+  
+  // Текст внутри
+  int yPos = 32;
+  d.setCursor(8, yPos);
+  d.setTextColor(0xFFFF, 0x0000);
+  d.println(line1);
+  
+  if (line2.length() > 0) {
+    yPos += 12;
+    d.setCursor(8, yPos);
+    d.setTextColor(0xFFFF, 0x0000);
+    d.println(line2);
+  }
+  
+  if (line3.length() > 0) {
+    yPos += 12;
+    d.setCursor(8, yPos);
+    d.setTextColor(0xFFFF, 0x0000);
+    d.println(line3);
+  }
+  
+  // Подсказка
+  d.setCursor(0, 110);
+  d.setTextColor(0x8410, 0x0000);
+  d.println("Press any key to continue...");
+}
+
 // Рисование маленького сердечка
 void drawHeart(int x, int y, uint16_t color) {
   auto& d = M5Cardputer.Display;
@@ -129,114 +185,356 @@ String wrapText(const String& text, size_t maxWidth) {
 }
 
 bool keyUpPressed(){
-  auto& ks = M5Cardputer.Keyboard.keysState();
-  
   // Стрелка вверх: ; (символ на клавише с оранжевой стрелкой)
-  if (M5Cardputer.Keyboard.isKeyPressed(';')) return true;
-  
-  // Альтернативно — W/w для левшей
-  return M5Cardputer.Keyboard.isKeyPressed('W') || M5Cardputer.Keyboard.isKeyPressed('w');
+  return M5Cardputer.Keyboard.isKeyPressed(';');
 }
 
 bool keyDownPressed(){
-  auto& ks = M5Cardputer.Keyboard.keysState();
-  
   // Стрелка вниз: . (символ на клавише с оранжевой стрелкой)
-  if (M5Cardputer.Keyboard.isKeyPressed('.')) return true;
-  
-  // Альтернативно — A/a для левшей  
-  return M5Cardputer.Keyboard.isKeyPressed('A') || M5Cardputer.Keyboard.isKeyPressed('a');
+  return M5Cardputer.Keyboard.isKeyPressed('.');
+}
+
+bool keyLeftPressed(){
+  // Стрелка влево: , (запятая на клавише с оранжевой стрелкой)
+  return M5Cardputer.Keyboard.isKeyPressed(',');
+}
+
+bool keyRightPressed(){
+  // Стрелка вправо: / (слэш на клавише с оранжевой стрелкой)
+  return M5Cardputer.Keyboard.isKeyPressed('/');
 }
 
 String promptInput(const String& title, size_t maxLen, bool mask=false) {
-  auto& d=M5Cardputer.Display; header(title.c_str());
-  printLine("(ASCII) Enter=OK  Esc=Cancel  Del=Erase", 0xFFE0);
-  String s="";
+  auto& d = M5Cardputer.Display;
+  d.fillScreen(0x0000);
+  d.setTextSize(1);
+  
+  // Заголовок с иконкой
+  d.setCursor(0, 0);
+  d.setTextColor(0x07FF, 0x0000); // cyan
+  d.println("Input");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.println("========================================");
+  
+  // Название поля
+  d.setCursor(4, 18);
+  d.setTextColor(0xFFE0, 0x0000); // yellow
+  d.println(title);
+  
+  // Рамка для ввода
+  drawBox(4, 32, 232, 24, 0x07E0); // зеленая рамка
+  
+  // Подсказка по управлению
+  d.setCursor(0, 100);
+  d.setTextColor(0x8410, 0x0000); // gray
+  d.println("Controls:");
+  d.setCursor(0, 108);
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[Enter]");
+  d.setTextColor(0x8410, 0x0000);
+  d.print(" OK  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[`]");
+  d.setTextColor(0x8410, 0x0000);
+  d.print(" Cancel");
+  d.setCursor(0, 118);
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[,/]");
+  d.setTextColor(0x8410, 0x0000);
+  d.print(" Move  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[Del]");
+  d.setTextColor(0x8410, 0x0000);
+  d.print(" Erase");
+  
+  String s = "";
+  int cursorPos = 0; // позиция курсора
   bool cancelled = false;
+  
   while (true) {
     M5Cardputer.update();
     if (M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed()) {
-      // ВАЖНО: ESC проверяем первым, до KeysState
-      // На M5Cardputer ESC - это клавиша с символом `
       if (M5Cardputer.Keyboard.isKeyPressed(KEY_ESC) || M5Cardputer.Keyboard.isKeyPressed('`')) { 
         cancelled = true;
         break; 
       }
       
       Keyboard_Class::KeysState status = M5Cardputer.Keyboard.keysState();
-      
-      // Enter - подтвердить
       if (status.enter) break;
       
-      // Del/Backspace - удалить последний символ
-      if (status.del && s.length() > 0) {
-        s.remove(s.length() - 1);
+      // Навигация курсором
+      if (keyLeftPressed()) {
+        cursorPos = max(0, cursorPos - 1);
+      } else if (keyRightPressed()) {
+        cursorPos = min((int)s.length(), cursorPos + 1);
       }
-      
-      // Добавление символов из word (фильтруем ESC если он попал в word)
-      for (char c : status.word) {
-        // Игнорируем служебные символы и backtick (ESC на M5Cardputer)
-        if (c != 0x1B && c != '`' && c >= 32 && c <= 126 && s.length() < maxLen) {
-          s += c;
+      // Del/Backspace - удаление символа перед курсором
+      else if (status.del && cursorPos > 0) {
+        s.remove(cursorPos - 1, 1);
+        cursorPos--;
+      }
+      // Добавление символов в позицию курсора
+      else {
+        for (char c : status.word) {
+          // Фильтруем только стрелки и служебные символы
+          if (c != 0x1B && c != '`' && c != ',' && c != '/' && c != ';' && c != '.' &&
+              c >= 32 && c <= 126 && s.length() < maxLen) {
+            s = s.substring(0, cursorPos) + String(c) + s.substring(cursorPos);
+            cursorPos++;
+          }
         }
       }
       
-      // отрисовка
-      d.fillRect(0, 48, d.width(), d.height()-48, 0x0000);
-      d.setCursor(0,48);
-      printLine(mask ? maskStars(s.length()) : s, 0xFFFF);
+      // Отрисовка текста в рамке
+      d.fillRect(6, 34, 228, 20, 0x0000); // очистка внутри рамки
+      d.setCursor(8, 38);
+      d.setTextColor(0xFFFF, 0x0000);
+      
+      String displayText = mask ? maskStars(s.length()) : s;
+      int scrollOffset = 0;
+      
+      // Прокрутка если текст длинный
+      if (displayText.length() > 38) {
+        if (cursorPos > 35) {
+          scrollOffset = cursorPos - 35;
+        }
+        displayText = displayText.substring(scrollOffset, min((int)displayText.length(), scrollOffset + 38));
+      }
+      
+      // Рисуем текст с курсором
+      for (int i = 0; i < displayText.length(); i++) {
+        int realPos = i + scrollOffset;
+        if (realPos == cursorPos && (millis() / 500) % 2 == 0) {
+          // Мигающий курсор в текущей позиции (инвертированный символ)
+          d.setTextColor(0x0000, 0x07E0);
+          d.print(displayText[i]);
+          d.setTextColor(0xFFFF, 0x0000);
+        } else {
+          d.print(displayText[i]);
+        }
+      }
+      
+      // Курсор в конце строки
+      if (cursorPos >= s.length() && (millis() / 500) % 2 == 0) {
+        d.print("_");
+      }
     }
     delay(8);
   }
+  
   if (cancelled) return "";
   return asciiOnly(s, maxLen);
 }
 
 // ====== Wi-Fi onboarding ======
 int scanAndSelectNetwork(String& outSsid, bool& openNet) {
-  header("WiFi: scanning...");
-  printLine("Scanning networks...", 0xFFFF);
+  auto& d = M5Cardputer.Display;
+  
+  // Scanning screen
+  d.fillScreen(0x0000);
+  d.setTextSize(1);
+  d.setCursor(0, 0);
+  d.setTextColor(0x07FF, 0x0000);
+  d.println("WiFi Setup");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.println("========================================");
+  
+  drawBox(4, 20, 232, 40, 0x07E0);
+  d.setCursor(8, 30);
+  d.setTextColor(0xFFE0, 0x0000);
+  d.println("  Scanning networks...");
+  d.setCursor(8, 42);
+  d.setTextColor(0x8410, 0x0000);
+  d.println("  Please wait");
+  
   int n = WiFi.scanNetworks();
-  if (n<=0){ printLine("No networks found.", 0xF800); delay(900); return -1; }
-  int idx=0;
+  
+  if (n <= 0) {
+    d.fillRect(6, 22, 228, 36, 0x0000);
+    d.setCursor(8, 32);
+    d.setTextColor(0xF800, 0x0000);
+    d.println("  No networks found!");
+    delay(1500);
+    return -1;
+  }
+  
+  int idx = 0;
   while (true) {
-    header("WiFi: select SSID");
-    int start = max(0, idx-6); int end=min(n, start+12);
-    for(int i=start;i<end;++i){
-      String line = String(i==idx?"> ":"  ") + WiFi.SSID(i);
-      if (WiFi.encryptionType(i)==WIFI_AUTH_OPEN) line += " (open)";
-      line += "  RSSI:" + String(WiFi.RSSI(i));
-      printLine(line, i==idx?0x07FF:0xFFFF);
+    d.fillScreen(0x0000);
+    d.setTextSize(1);
+    
+    // Заголовок
+    d.setCursor(0, 0);
+    d.setTextColor(0x07FF, 0x0000);
+    d.print("WiFi Networks [");
+    d.setTextColor(0xF800, 0x0000);
+    d.print(n);
+    d.setTextColor(0x07FF, 0x0000);
+    d.println("]");
+    d.setTextColor(0xFFFF, 0x0000);
+    d.println("========================================");
+    
+    // Список сетей (показываем до 6 штук)
+    int start = max(0, idx - 3);
+    int end = min(n, start + 6);
+    int yPos = 18;
+    
+    for (int i = start; i < end; ++i) {
+      bool selected = (i == idx);
+      uint16_t boxColor = selected ? 0x07E0 : 0x8410;
+      
+      // Рамка для сети
+      drawBox(4, yPos, 232, 14, boxColor);
+      
+      d.setCursor(8, yPos + 3);
+      d.setTextColor(selected ? 0x07FF : 0xFFFF, 0x0000);
+      
+      // SSID (обрезаем если длинный)
+      String ssid = WiFi.SSID(i);
+      if (ssid.length() > 22) ssid = ssid.substring(0, 22);
+      d.print(ssid);
+      
+      // Lock icon для защищенных сетей
+      if (WiFi.encryptionType(i) != WIFI_AUTH_OPEN) {
+        d.setCursor(180, yPos + 3);
+        d.setTextColor(0xFFE0, 0x0000);
+        d.print("[L]");
+      }
+      
+      // RSSI
+      d.setCursor(204, yPos + 3);
+      int rssi = WiFi.RSSI(i);
+      uint16_t rssiColor = rssi > -60 ? 0x07E0 : (rssi > -75 ? 0xFFE0 : 0xF800);
+      d.setTextColor(rssiColor, 0x0000);
+      d.print(rssi);
+      
+      yPos += 16;
     }
-    printLine("",0xFFFF);
-    printLine("Up/Down (or W/A)  Enter select  R rescan  Esc cancel",0xFFE0);
-
-    // input
-    for(;;){
+    
+    // Подсказки управления
+    d.setCursor(0, 116);
+    d.setTextColor(0xFFE0, 0x0000);
+    d.print("[W/A]"); 
+    d.setTextColor(0x8410, 0x0000);
+    d.print(" Nav ");
+    d.setTextColor(0xFFE0, 0x0000);
+    d.print("[Enter]");
+    d.setTextColor(0x8410, 0x0000);
+    d.print(" OK ");
+    d.setTextColor(0xFFE0, 0x0000);
+    d.print("[R]");
+    d.setTextColor(0x8410, 0x0000);
+    d.print(" Scan ");
+    d.setTextColor(0xFFE0, 0x0000);
+    d.print("[`]");
+    d.setTextColor(0x8410, 0x0000);
+    d.print(" Exit");
+    
+    // Input
+    for (;;) {
       M5Cardputer.update();
-      if (!(M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed())) { delay(10); continue; }
-      if (keyUpPressed())   { idx = (idx>0)?idx-1:0; break; }
-      if (keyDownPressed()) { idx = (idx<n-1)?idx+1:n-1; break; }
-      if (M5Cardputer.Keyboard.isKeyPressed('R') || M5Cardputer.Keyboard.isKeyPressed('r')) { return scanAndSelectNetwork(outSsid, openNet); }
-      if (M5Cardputer.Keyboard.isKeyPressed(KEY_ESC)) { return -1; }
-      if (M5Cardputer.Keyboard.isKeyPressed(KEY_ENTER)){
+      if (!(M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed())) {
+        delay(10);
+        continue;
+      }
+      if (keyUpPressed()) {
+        idx = (idx > 0) ? idx - 1 : 0;
+        break;
+      }
+      if (keyDownPressed()) {
+        idx = (idx < n - 1) ? idx + 1 : n - 1;
+        break;
+      }
+      if (M5Cardputer.Keyboard.isKeyPressed('R') || M5Cardputer.Keyboard.isKeyPressed('r')) {
+        return scanAndSelectNetwork(outSsid, openNet);
+      }
+      if (M5Cardputer.Keyboard.isKeyPressed(KEY_ESC) || M5Cardputer.Keyboard.isKeyPressed('`')) {
+        return -1;
+      }
+      if (M5Cardputer.Keyboard.isKeyPressed(KEY_ENTER)) {
         outSsid = WiFi.SSID(idx);
-        openNet = (WiFi.encryptionType(idx)==WIFI_AUTH_OPEN);
+        openNet = (WiFi.encryptionType(idx) == WIFI_AUTH_OPEN);
         return idx;
       }
     }
   }
 }
 bool tryConnectWiFi(const String& ssid, const String& pass, int tries=30){
-  header("WiFi: connecting");
-  printLine("SSID: "+ssid, 0xFFFF);
+  auto& d = M5Cardputer.Display;
+  d.fillScreen(0x0000);
+  d.setTextSize(1);
+  
+  // Заголовок
+  d.setCursor(0, 0);
+  d.setTextColor(0x07FF, 0x0000);
+  d.println("WiFi Connection");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.println("========================================");
+  
+  // Рамка с информацией
+  drawBox(4, 20, 232, 50, 0xFFE0); // желтая рамка
+  
+  d.setCursor(8, 26);
+  d.setTextColor(0x8410, 0x0000);
+  d.println("Connecting to:");
+  
+  d.setCursor(8, 38);
+  d.setTextColor(0xFFFF, 0x0000);
+  String displaySsid = ssid;
+  if (displaySsid.length() > 30) displaySsid = displaySsid.substring(0, 30);
+  d.println(displaySsid);
+  
+  d.setCursor(8, 52);
+  d.setTextColor(0x8410, 0x0000);
+  d.print("Status: ");
+  d.setTextColor(0xFFE0, 0x0000);
+  
   WiFi.mode(WIFI_STA);
-  WiFi.begin(ssid.c_str(), pass.length()?pass.c_str():nullptr);
-  for(int i=0;i<tries;++i){
-    if (WiFi.status()==WL_CONNECTED){ printLine("Connected.",0x07E0); return true; }
-    delay(300); M5Cardputer.Display.print(".");
+  WiFi.begin(ssid.c_str(), pass.length() ? pass.c_str() : nullptr);
+  
+  int dotCount = 0;
+  for (int i = 0; i < tries; ++i) {
+    if (WiFi.status() == WL_CONNECTED) {
+      // Success!
+      d.fillRect(6, 22, 228, 46, 0x0000);
+      drawBox(4, 20, 232, 50, 0x07E0); // зеленая рамка
+      
+      d.setCursor(8, 40);
+      d.setTextColor(0x07E0, 0x0000);
+      d.setTextSize(1);
+      d.println("    Connected!");
+      
+      delay(500);
+      return true;
+    }
+    
+    // Анимация точек
+    if (i % 3 == 0) {
+      d.fillRect(68, 52, 100, 8, 0x0000);
+      d.setCursor(68, 52);
+      d.setTextColor(0xFFE0, 0x0000);
+      for (int j = 0; j < (dotCount % 4); ++j) {
+        d.print(".");
+      }
+      dotCount++;
+    }
+    
+    delay(300);
   }
-  printLine("\nFailed.",0xF800);
+  
+  // Failed
+  d.fillRect(6, 22, 228, 46, 0x0000);
+  drawBox(4, 20, 232, 50, 0xF800); // красная рамка
+  
+  d.setCursor(8, 35);
+  d.setTextColor(0xF800, 0x0000);
+  d.println("  Connection Failed!");
+  
+  d.setCursor(8, 50);
+  d.setTextColor(0x8410, 0x0000);
+  d.println("  Check password/signal");
+  
+  delay(2000);
   return false;
 }
 bool wifiOnboarding(){
@@ -271,9 +569,6 @@ void ensureDevice() {
   }
   // Register device if author not set
   if (author.length() == 0) {
-    header("First run - Registration");
-    printLine("Enter username (min 3 chars):", 0xFFFF);
-    printLine("Press ESC to skip", 0x8410);
     String newAuthor = "";
     while (true) {
       newAuthor = asciiOnly(promptInput("Username (3-24 chars)", 24), 24);
@@ -281,48 +576,30 @@ void ensureDevice() {
         // ESC pressed - use temporary name
         author = "user_" + deviceId.substring(0, 6);
         prefs.putString("author", author);
-        header("Skipped Registration");
-        printLine("Using temp name: " + author, 0xFFE0);
-        printLine("Press [U] later to register", 0xFFE0);
-        printLine("Press any key...", 0xFFE0);
+        showMessage("Registration Skipped", "Using temp name:", author, "Press [U] to register later", 3);
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
         break;
       }
       if (newAuthor.length() < 3) {
-        header("Error");
-        printLine("Username too short (min 3)", 0xF800);
-        printLine("Press ESC to skip", 0x8410);
-        printLine("Press any key to retry...", 0xFFE0);
+        showMessage("Error", "Username too short!", "Minimum 3 characters", "ESC=Skip, Any=Retry", 2);
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
         continue;
       }
       // Try to register
       if (!wifiOK) {
-        header("No WiFi");
-        printLine("WiFi not connected!", 0xF800);
-        printLine("Using temp name: user_" + deviceId.substring(0,6), 0xFFE0);
-        printLine("Connect WiFi and press [U]", 0xFFE0);
-        printLine("to register later", 0xFFE0);
         author = "user_" + deviceId.substring(0, 6);
         prefs.putString("author", author);
-        printLine("Press any key...", 0xFFE0);
+        showMessage("No WiFi", "WiFi not connected!", "Temp name: " + author, "Connect WiFi & press [U]", 3);
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
         break;
       }
-      header("Registering...");
-      printLine("Connecting to server...", 0xFFFF);
+      
       if (apiRegister(newAuthor)) {
-        header("Success!");
-        printLine("Username: " + author, 0x07E0);
-        printLine("Press any key to continue...", 0xFFE0);
+        showMessage("Success!", "Username registered:", author, "", 1);
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
         break;
       } else {
-        header("Registration Failed");
-        printLine("Username may be taken or", 0xF800);
-        printLine("server error", 0xF800);
-        printLine("Press ESC to skip", 0x8410);
-        printLine("Press any key to retry...", 0xFFE0);
+        showMessage("Registration Failed", "Username may be taken", "or server error", "ESC=Skip, Any=Retry", 2);
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
       }
     }
@@ -437,6 +714,76 @@ bool apiStats() {
   return true;
 }
 
+// ====== Splash Screen ======
+void showSplashScreen() {
+  auto& d = M5Cardputer.Display;
+  const char* text = "MicroCast";
+  const int textLen = 9;
+  const char glitchChars[] = "@#$%&*!?<>[]{}";
+  const int glitchCount = 14;
+  
+  d.fillScreen(0x0000); // черный фон
+  d.setTextSize(2); // большой шрифт
+  
+  // Вычисляем позицию для центрирования
+  // Размер символа при textSize=2: ~12x16 пикселей
+  int charWidth = 12;
+  int totalWidth = textLen * charWidth;
+  int startX = (240 - totalWidth) / 2; // центрируем по горизонтали
+  int startY = 60; // центрируем по вертикали
+  
+  // Анимация: glitch + typewriter (2 секунды)
+  unsigned long startTime = millis();
+  int currentChar = 0;
+  
+  while (millis() - startTime < 2000) {
+    d.fillRect(0, startY - 5, 240, 25, 0x0000); // очищаем область текста
+    d.setCursor(startX, startY);
+    d.setTextColor(0x07E0, 0x0000); // зеленый цвет
+    
+    // Определяем сколько символов уже "напечатано"
+    unsigned long elapsed = millis() - startTime;
+    currentChar = min((int)(elapsed / 200), textLen); // 200ms на символ = ~1.8 сек на весь текст
+    
+    // Отрисовка
+    for (int i = 0; i < textLen; i++) {
+      if (i < currentChar) {
+        // Уже напечатанные символы - показываем правильно
+        d.print(text[i]);
+      } else if (i == currentChar) {
+        // Текущий печатающийся символ - glitch эффект
+        if (random(0, 3) == 0) { // 33% шанс показать glitch
+          d.print(glitchChars[random(0, glitchCount)]);
+        } else {
+          d.print(text[i]);
+        }
+      } else {
+        // Еще не напечатанные - случайные символы с низкой яркостью
+        d.setTextColor(0x0320, 0x0000); // темно-зеленый
+        d.print(glitchChars[random(0, glitchCount)]);
+        d.setTextColor(0x07E0, 0x0000); // возвращаем яркий зеленый
+      }
+    }
+    
+    delay(50); // обновление 20 FPS
+    
+    // Проверка на пропуск (любая клавиша)
+    M5Cardputer.update();
+    if (M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed()) {
+      break;
+    }
+  }
+  
+  // Финальный кадр - чистый текст
+  d.fillRect(0, startY - 5, 240, 25, 0x0000);
+  d.setCursor(startX, startY);
+  d.setTextColor(0x07E0, 0x0000);
+  d.print(text);
+  delay(500); // показываем финальный текст 0.5 сек
+  
+  d.setTextSize(1); // возвращаем стандартный размер шрифта
+}
+
 // ====== UI main ======
 void drawUI() {
   auto& d = M5Cardputer.Display;
@@ -453,9 +800,9 @@ void drawUI() {
   d.print("]");
   
   // v0.1 справа
-  d.setCursor(210, 0);
+  d.setCursor(190, 0);
   d.setTextColor(0xF800, 0x0000); // red
-  d.println("v0.1");
+  d.println("beta0.1");
   
   // Строка 2: подчеркивание
   d.setCursor(0, 8);
@@ -464,14 +811,19 @@ void drawUI() {
   
   // Строка 3: "[N] WiFi🟢 [U] User: name"
   d.setCursor(0, 16);
+  d.setTextColor(0xFFE0, 0x0000); // yellow
+  d.print("[N]");
   d.setTextColor(0xFFFF, 0x0000); // white
-  d.print("[N] WiFi");
+  d.print(" WiFi");
   
   // Индикатор Wi-Fi (зеленый/красный кружок)
   drawWiFiIndicator(52, 20, wifiOK);
   
   d.setCursor(60, 16);
-  d.print(" [U] User: ");
+  d.setTextColor(0xFFE0, 0x0000); // yellow
+  d.print(" [U]");
+  d.setTextColor(0xFFFF, 0x0000); // white
+  d.print(" User: ");
   d.setTextColor(0x07FF, 0x0000); // cyan для имени
   d.print(author);
   
@@ -542,6 +894,10 @@ void drawUI() {
 void setup() {
   auto cfg=M5.config(); M5Cardputer.begin(cfg,true);
   M5Cardputer.Display.setRotation(1); M5Cardputer.Display.setTextSize(1);
+  
+  // Показываем заставку
+  showSplashScreen();
+  
   ensureDevice();
   wifiLoadOrOnboard();
   if (wifiOK) {
@@ -591,8 +947,6 @@ void loop(){
     else if (M5Cardputer.Keyboard.isKeyPressed('U') || M5Cardputer.Keyboard.isKeyPressed('u')) {
       String newName = promptInput("New username (3-24)", 24);
       if (newName.length() >= 3 && wifiOK) {
-        header("Updating username...");
-        printLine("Please wait...", 0xFFFF);
         String errorMsg = "";
         bool success = false;
         
@@ -601,8 +955,6 @@ void loop(){
           success = true;
         } else if (errorMsg == "Device not found") {
           // Device not registered yet - register it
-          header("Registering...");
-          printLine("First time registration...", 0xFFFF);
           if (apiRegister(newName)) {
             success = true;
             errorMsg = "";
@@ -612,20 +964,14 @@ void loop(){
         }
         
         if (success) {
-          header("Success!");
-          printLine("Username: " + author, 0x07E0);
-          printLine("Press any key...", 0xFFE0);
+          showMessage("Success!", "Username updated:", author, "", 1);
           while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
         } else {
-          header("Error");
-          printLine(errorMsg, 0xF800);
-          printLine("Press any key...", 0xFFE0);
+          showMessage("Error", errorMsg, "", "", 2);
           while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
         }
       } else if (newName.length() > 0 && newName.length() < 3) {
-        header("Error");
-        printLine("Username too short (min 3)", 0xF800);
-        printLine("Press any key...", 0xFFE0);
+        showMessage("Error", "Username too short!", "Minimum 3 characters", "", 2);
         while (!M5Cardputer.Keyboard.isChange()) { M5Cardputer.update(); delay(10); }
       }
       drawUI();
@@ -635,28 +981,46 @@ void loop(){
 #else
     else if (M5Cardputer.Keyboard.isKeyPressed(KEY_TAB) && (M5Cardputer.Keyboard.isKeyPressed('C') || M5Cardputer.Keyboard.isKeyPressed('c'))) {
 #endif
-      header("Clear All Settings");
-      printLine("This will erase:", 0xFFFF);
-      printLine("- Device ID", 0xFFE0);
-      printLine("- Username", 0xFFE0);
-      printLine("- WiFi settings", 0xFFE0);
-      printLine("", 0xFFFF);
-      printLine("Press ENTER to confirm", 0xF800);
-      printLine("Press ESC to cancel", 0x07E0);
+      auto& d = M5Cardputer.Display;
+      d.fillScreen(0x0000);
+      d.setTextSize(1);
+      
+      // Предупреждение
+      d.setCursor(0, 0);
+      d.setTextColor(0xF800, 0x0000);
+      d.println("Clear All Settings");
+      d.setTextColor(0xFFFF, 0x0000);
+      d.println("========================================");
+      
+      drawBox(4, 20, 232, 60, 0xF800);
+      d.setCursor(8, 28);
+      d.setTextColor(0xFFFF, 0x0000);
+      d.println("  This will erase:");
+      d.setCursor(8, 40);
+      d.println("  - Device ID");
+      d.setCursor(8, 52);
+      d.println("  - Username");
+      d.setCursor(8, 64);
+      d.println("  - WiFi settings");
+      
+      d.setCursor(0, 110);
+      d.setTextColor(0xFFE0, 0x0000);
+      d.print("[Enter]");
+      d.setTextColor(0x8410, 0x0000);
+      d.print(" Confirm  ");
+      d.setTextColor(0xFFE0, 0x0000);
+      d.print("[`]");
+      d.setTextColor(0x8410, 0x0000);
+      d.println(" Cancel");
       
       while (true) {
         M5Cardputer.update();
         if (M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed()) {
           if (M5Cardputer.Keyboard.isKeyPressed(KEY_ENTER)) {
-            header("Clearing...");
-            printLine("Erasing all data...", 0xF800);
             prefs.begin("microcast", false);
             prefs.clear();
             prefs.end();
-            printLine("Done!", 0x07E0);
-            printLine("", 0xFFFF);
-            printLine("Please restart device", 0xFFE0);
-            printLine("(unplug and plug back)", 0xFFE0);
+            showMessage("Cleared!", "All data erased", "Please restart device", "(unplug & plug back)", 1);
             while(true) { delay(100); } // Halt
           }
           if (M5Cardputer.Keyboard.isKeyPressed(KEY_ESC) || M5Cardputer.Keyboard.isKeyPressed('`')) {

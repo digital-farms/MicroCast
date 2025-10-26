@@ -81,36 +81,51 @@ The main feed will appear with latest posts.
 ### Main Screen
 
 ```
-┌─────────────────────────────────┐
-│ [N] WiFi 🟢  [U] User: alice    │
-├─────────────────────────────────┤
-│ ┌─────────────────────────────┐ │
-│ │ bob                         │ │
-│ │ Hello everyone!             │ │
-│ │ ❤️ 5        23.10.25 14:30  │ │
-│ └─────────────────────────────┘ │
-│ ┌─────────────────────────────┐ │
-│ │ alice                       │ │
-│ │ First post here!            │ │
-│ │ ❤️ 3        23.10.25 14:25  │ │
-│ └─────────────────────────────┘ │
-├─────────────────────────────────┤
-│ [W/A, Up/Dn] Scroll             │
-│ [Enter] Like, [Fn+Enter] Post   │
-└─────────────────────────────────┘
+┌──────────────────────────────────────┐
+│ MicroCast [15]          beta0.1      │
+│ [N]WiFi🟢 [U]User:alice   [I]Info   │
+│ ┌────┐ ┌────┐ ┌────┐                │
+│ │NEW │ │TOP │ │YOU │  ← Sections    │
+│ └────┘ └────┘ └────┘                │
+│ ┌──────────────────────────────────┐ │
+│ │ bob                              │ │
+│ │ Hello everyone!                  │ │
+│ │ ❤️ 5           23.10.25 14:30   │ │
+│ └──────────────────────────────────┘ │
+│ ┌──────────────────────────────────┐ │
+│ │ alice                            │ │
+│ │ First post here!                 │ │
+│ │ ❤️ 3           23.10.25 14:25   │ │
+│ └──────────────────────────────────┘ │
+└──────────────────────────────────────┘
 ```
+
+### Three Sections
+
+**NEW** - Latest posts (newest first)
+**TOP** - Most liked posts (all-time best)
+**YOU** - Your profile and posts
+
+**How to switch sections:**
+1. Press **;** (up) until you reach the section buttons
+2. Use **,** (left) and **/** (right) to select section
+3. Press **Enter** to confirm
+4. Press **.** (down) to return to posts
 
 ### Controls
 
 | Key | What it does |
 |-----|--------------|
-| **W** or **;** | Scroll up |
-| **A** or **.** | Scroll down |
-| **Enter** | Like/Unlike post |
+| **; or Up** | Scroll up (or go to sections) |
+| **. or Down** | Scroll down |
+| **, or Left** | Previous section (when in section menu) |
+| **/ or Right** | Next section (when in section menu) |
+| **Enter** | Like/Unlike post OR confirm section |
 | **Fn + Enter** | Create new post |
-| **R** | Refresh feed |
+| **R** | Refresh current section |
 | **U** | Change username |
 | **N** | Change WiFi |
+| **I** | Show Info window (controls help) |
 
 ---
 
@@ -132,12 +147,46 @@ The main feed will appear with latest posts.
 
 ## ❤️ Liking Posts
 
-1. Scroll to any post using **W/A**
+1. Scroll to any post using **; .**
 2. Press **Enter** to like
-3. Red heart ❤️ means you liked it
+3. Heart counter increases
 4. Press **Enter** again to unlike
 
-**Note:** You can only like each post once!
+**Note:** 
+- You can only like each post once!
+- Likes update instantly without refreshing
+- You stay on the same post after liking
+
+---
+
+## 📊 Your Profile (YOU Section)
+
+View your stats and posts in the **YOU** section!
+
+```
+┌──────────────────────────────────┐
+│ User:alice                       │
+│ ID:a1b2c3d4...                   │
+│ ❤️ Total Likes:42                │
+│ Posts:15                         │
+│ ┌────────────────────────────┐   │
+│ │ alice                      │   │
+│ │ My latest post!            │   │
+│ │ ❤️ 8    26.10.25 19:41    │   │
+│ └────────────────────────────┘   │
+└──────────────────────────────────┘
+```
+
+**What you'll see:**
+- Your username and device ID
+- **Total Likes** - All likes you've received
+- **Posts** - How many posts you've made
+- Your last 20 posts (newest first)
+
+**How to access:**
+1. Scroll up to section buttons
+2. Select **YOU** with **,** **/** keys
+3. Press **Enter**
 
 ---
 
@@ -154,11 +203,35 @@ The main feed will appear with latest posts.
 
 ---
 
+## ℹ️ Info Window (Quick Help)
+
+Press **I** key anytime to see controls help!
+
+```
+┌─────────────────────────────┐
+│         Controls            │
+├─────────────────────────────┤
+│ [Up/Dn] Scroll [Enter] Like │
+│ [Lt/Rt] Sections [R] Refresh│
+│ [Fn+Enter] Post [U] Username│
+│ [N] WiFi  [I] Info          │
+│                             │
+│ NEW latest TOP best YOU...  │
+│ Press any key to close      │
+└─────────────────────────────┘
+```
+
+**Quick reference for all controls!**
+- Press **I** to open
+- Press any key to close
+
+---
+
 ## 🌐 WiFi Settings
 
 ### Connect to Different Network
 1. Press **N** key
-2. Select network with **W/A**
+2. Select network with **; .**
 3. Press **Enter**
 4. Type password
 5. Press **Enter**
@@ -232,7 +305,10 @@ Use this if:
 ### Better Experience
 - Use short, clear messages
 - Like posts you enjoy
-- Refresh feed regularly with **R**
+- Press **I** to see all controls anytime
+- Check **TOP** section for most popular posts
+- Use **YOU** section to track your stats
+- Refresh with **R** only when needed (likes update automatically!)
 - Check WiFi indicator often
 
 ### Privacy
@@ -245,6 +321,9 @@ Use this if:
 
 ## ❓ FAQ
 
+**Q: What's the difference between NEW, TOP, and YOU sections?**  
+A: NEW shows latest posts, TOP shows most liked posts ever, YOU shows your profile and your posts.
+
 **Q: Can I delete my posts?**  
 A: No, posts are permanent once posted.
 
@@ -252,7 +331,16 @@ A: No, posts are permanent once posted.
 A: No, all posts are public.
 
 **Q: How many posts can I see?**  
-A: Up to 50 latest posts in feed.
+A: Up to 50 posts per section.
+
+**Q: Why does my position reset after I refresh?**  
+A: Press **R** to refresh (resets position). Liking a post updates feed but keeps your position!
+
+**Q: What is Total Likes in YOU section?**  
+A: Total Likes = all likes you've received across all your posts (all-time).
+
+**Q: Can I see who liked my posts?**  
+A: No, only the total count is shown.
 
 **Q: Can I use emojis?**  
 A: No, only English letters and symbols work.
@@ -268,6 +356,9 @@ A: Yes! Completely free to use.
 
 **Q: Do I need to create an account?**  
 A: Just pick a username - no email or password needed!
+
+**Q: What does the device count [N] mean?**  
+A: Shows how many devices are registered on the network.
 
 ---
 
@@ -305,4 +396,12 @@ MicroCast is all about simple, quick communication.
 
 ---
 
-*MicroCast v0.1 - Made for M5Cardputer community*
+*MicroCast v0.2 - Made for M5Cardputer community*
+
+**New in v0.2:**
+- 📊 Three sections: NEW, TOP, YOU
+- ℹ️ Info window with quick help ([I] key)
+- 🏆 TOP section shows most liked posts
+- 👤 YOU section with profile stats
+- ⚡ Instant like updates (no refresh needed)
+- 🎨 Improved UI with section buttons

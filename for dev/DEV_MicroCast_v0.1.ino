@@ -67,6 +67,21 @@ size_t feedCount = 0;
 int sel = 0; // selected post index in FEED
 int scrollOffset = 0; // scroll offset for displaying 2 posts
 
+// ====== SECTIONS ======
+enum Section { SECTION_NEW, SECTION_TOP, SECTION_YOU };
+Section currentSection = SECTION_NEW;
+bool isInSectionSelector = false; // true когда на панели выбора разделов
+int sectionSel = 0; // 0=NEW, 1=TOP, 2=YOU
+bool showingInfo = false; // показывать Info окно
+bool isLoading = false; // индикатор загрузки
+
+// Profile data (для YOU раздела)
+struct Profile {
+  String author;
+  int totalLikes;
+  int postCount;
+} profile;
+
 // ====== helpers ======
 String asciiOnly(const String& s, size_t maxLen) {
   String o; o.reserve(s.length());
@@ -706,6 +721,85 @@ bool apiStats() {
   return true;
 }
 
+bool apiBest() {
+  String resp; int code=0; if (!httpGetJSON(String(PROXY_BASE)+"/v1/best", resp, code)) return false;
+  if (code!=200) return false;
+  StaticJsonDocument<8192> doc; DeserializationError e = deserializeJson(doc, resp);
+  if (e) return false; JsonArray arr = doc["items"].as<JsonArray>();
+  feedCount = 0; for (JsonObject o: arr) {
+    if (feedCount>=FEED_MAX) break; Post p;
+    p.id = (const char*)(o["id"]|""); p.author = asciiOnly((const char*)(o["author"]|""), 24);
+    p.text = asciiOnly((const char*)(o["text"]|""), 120);
+    p.created_at = (const char*)(o["created_at"]|""); p.likes = (int)(o["likes"]|0);
+    FEED[feedCount++] = p;
+  }
+  if (sel >= (int)feedCount) sel = (int)feedCount-1; if (sel<0) sel=0; return true;
+}
+
+bool apiProfile() {
+  String url = String(PROXY_BASE) + "/v1/profile?device_id=" + deviceId;
+  String resp; int code=0; if (!httpGetJSON(url, resp, code)) return false;
+  if (code!=200) return false;
+  StaticJsonDocument<8192> doc; DeserializationError e = deserializeJson(doc, resp);
+  if (e) return false;
+  
+  profile.author = String((const char*)(doc["author"]|""));
+  profile.postCount = (int)(doc["post_count"]|0);
+  profile.totalLikes = (int)(doc["total_likes"]|0);
+  
+  JsonArray arr = doc["posts"].as<JsonArray>();
+  feedCount = 0; for (JsonObject o: arr) {
+    if (feedCount>=FEED_MAX) break; Post p;
+    p.id = (const char*)(o["id"]|""); p.author = asciiOnly((const char*)(o["author"]|""), 24);
+    p.text = asciiOnly((const char*)(o["text"]|""), 120);
+    p.created_at = (const char*)(o["created_at"]|""); p.likes = (int)(o["likes"]|0);
+    FEED[feedCount++] = p;
+  }
+  if (sel >= (int)feedCount) sel = (int)feedCount-1; if (sel<0) sel=0; return true;
+}
+
+// Функция загрузки данных текущего раздела
+void loadCurrentSection() {
+  if (!wifiOK) return;
+  isLoading = true;
+  drawUI(); // показываем "Loading..."
+  
+  bool success = false;
+  switch(currentSection) {
+    case SECTION_NEW: success = apiFeed(); break;
+    case SECTION_TOP: success = apiBest(); break;
+    case SECTION_YOU: success = apiProfile(); break;
+  }
+  
+  isLoading = false;
+  sel = 0;
+  scrollOffset = 0;
+  drawUI();
+}
+
+// Тихое обновление (без Loading и без сброса позиции)
+void refreshCurrentSectionSilent() {
+  if (!wifiOK) return;
+  
+  // Сохраняем текущую позицию
+  int oldSel = sel;
+  int oldScrollOffset = scrollOffset;
+  
+  bool success = false;
+  switch(currentSection) {
+    case SECTION_NEW: success = apiFeed(); break;
+    case SECTION_TOP: success = apiBest(); break;
+    case SECTION_YOU: success = apiProfile(); break;
+  }
+  
+  // Восстанавливаем позицию
+  sel = min(oldSel, (int)feedCount - 1);
+  if (sel < 0) sel = 0;
+  scrollOffset = min(oldScrollOffset, max(0, (int)feedCount - 1));
+  
+  drawUI();
+}
+
 // ====== Splash Screen ======
 void showSplashScreen() {
   auto& d = M5Cardputer.Display;
@@ -776,6 +870,82 @@ void showSplashScreen() {
   d.setTextSize(1); // возвращаем стандартный размер шрифта
 }
 
+// ====== Info Popup ======
+void drawInfoPopup() {
+  auto& d = M5Cardputer.Display;
+  d.fillScreen(0x0000);
+  d.setTextSize(1);
+  
+  // Центральное окно с рамкой
+  drawBox(10, 20, 220, 95, 0x07FF); // cyan border
+  
+  // Заголовок
+  d.setCursor(95, 25);
+  d.setTextColor(0x07FF, 0x0000);
+  d.println("Controls");
+  
+  // Подсказки
+  d.setCursor(15, 38);
+  d.setTextColor(0xFFE0, 0x0000); // yellow
+  d.print("[Up/Dn]");
+  d.setTextColor(0xFFFF, 0x0000); // white
+  d.print(" Scroll  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[Enter]");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.print(" Like");
+  
+  d.setCursor(15, 48);
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[Lt/Rt]");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.print(" Sections  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[R]");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.print(" Refresh");
+  
+  d.setCursor(15, 58);
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[Fn+Enter]");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.print(" Post  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[U]");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.print(" Username");
+  
+  d.setCursor(15, 68);
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[N]");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.print(" WiFi  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("[I]");
+  d.setTextColor(0xFFFF, 0x0000);
+  d.print(" Info");
+  
+  // Разделы
+  d.setCursor(15, 86);
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("NEW");
+  d.setTextColor(0x8410, 0x0000);
+  d.print(" latest  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("TOP");
+  d.setTextColor(0x8410, 0x0000);
+  d.print(" best  ");
+  d.setTextColor(0xFFE0, 0x0000);
+  d.print("YOU");
+  d.setTextColor(0x8410, 0x0000);
+  d.print(" profile");
+  
+  // Подсказка закрытия
+  d.setCursor(50, 103);
+  d.setTextColor(0x8410, 0x0000);
+  d.print("Press any key to close");
+}
+
 // ====== UI main ======
 void drawUI() {
   auto& d = M5Cardputer.Display;
@@ -783,7 +953,7 @@ void drawUI() {
   d.setTextSize(1);
   d.setCursor(0, 0);
   
-  // Строка 1: "MicroCast [156]" (циан) + "v0.1" (красный) справа
+  // Строка 1: "MicroCast [156]" (циан) + "beta0.1" (красный) справа
   d.setTextColor(0x07FF, 0x0000); // cyan
   d.print("MicroCast [");
   d.setTextColor(0xF800, 0x0000); // red
@@ -791,60 +961,166 @@ void drawUI() {
   d.setTextColor(0x07FF, 0x0000); // cyan
   d.print("]");
   
-  // v0.1 справа
+  // beta0.1 справа
   d.setCursor(190, 0);
   d.setTextColor(0xF800, 0x0000); // red
-  d.println("beta0.1");
+  d.println("beta0.2");
   
   // Строка 2: подчеркивание
   d.setCursor(0, 8);
   d.setTextColor(0xFFFF, 0x0000); // white
   d.println("========================================");
   
-  // Строка 3: "[N] WiFi🟢 [U] User: name"
-  d.setCursor(0, 16);
+  // Строка 3: "[N]WiFi🟢 [U]User: name [I]Info"
+  d.setCursor(2, 16);
   d.setTextColor(0xFFE0, 0x0000); // yellow
   d.print("[N]");
   d.setTextColor(0xFFFF, 0x0000); // white
-  d.print(" WiFi");
+  d.print("WiFi");
   
   // Индикатор Wi-Fi (зеленый/красный кружок)
-  drawWiFiIndicator(52, 20, wifiOK);
+  drawWiFiIndicator(48, 19, wifiOK);
   
-  d.setCursor(60, 16);
+  d.setCursor(65, 16);
   d.setTextColor(0xFFE0, 0x0000); // yellow
-  d.print(" [U]");
+  d.print("[U]");
   d.setTextColor(0xFFFF, 0x0000); // white
-  d.print(" User: ");
+  d.print("User:");
   d.setTextColor(0x07FF, 0x0000); // cyan для имени
   d.print(author);
   
-  // Отображаем 2 поста начиная с scrollOffset
-  int yPos = 28; // начальная позиция для постов
-  int boxHeight = 42; // высота одного блока поста (увеличено для многострочного текста)
-  int boxSpacing = 3; // отступ между блоками
+  // [I] Info кнопка справа
+  d.setCursor(196, 16);
+  d.setTextColor(0xFFE0, 0x0000); // yellow
+  d.print("[I]");
+  d.setTextColor(0xFFFF, 0x0000); // white
+  d.print("Info");
   
-  for (int i = 0; i < 2; i++) {
+  // Строка 4: Красивые кнопки разделов с рамками (симметрично на всю ширину)
+  int btnY = 27;
+  int btnW = 70; // ширина кнопки (уменьшено)
+  int btnH = 14; // высота кнопки
+  int spacing = 12; // отступ между кнопками (уменьшено)
+  int startX = 2; // начальная позиция (сдвинуто влево)
+  
+  // NEW кнопка
+  int newX = startX;
+  uint16_t newColor = (isInSectionSelector && sectionSel == 0) ? 0x07E0 : 
+                      (currentSection == SECTION_NEW) ? 0x07E0 : 0x8410;
+  uint16_t newBg = (isInSectionSelector && sectionSel == 0) ? 0x07E0 : 0x0000;
+  uint16_t newFg = (isInSectionSelector && sectionSel == 0) ? 0x0000 : newColor;
+  
+  drawBox(newX, btnY, btnW, btnH, newColor);
+  if (isInSectionSelector && sectionSel == 0) {
+    d.fillRect(newX + 1, btnY + 1, btnW - 2, btnH - 2, newBg);
+  }
+  d.setCursor(newX + 25, btnY + 3);
+  d.setTextColor(newFg, newBg);
+  d.print("NEW");
+  
+  // TOP кнопка
+  int topX = newX + btnW + spacing;
+  uint16_t topColor = (isInSectionSelector && sectionSel == 1) ? 0x07E0 : 
+                      (currentSection == SECTION_TOP) ? 0x07E0 : 0x8410;
+  uint16_t topBg = (isInSectionSelector && sectionSel == 1) ? 0x07E0 : 0x0000;
+  uint16_t topFg = (isInSectionSelector && sectionSel == 1) ? 0x0000 : topColor;
+  
+  drawBox(topX, btnY, btnW, btnH, topColor);
+  if (isInSectionSelector && sectionSel == 1) {
+    d.fillRect(topX + 1, btnY + 1, btnW - 2, btnH - 2, topBg);
+  }
+  d.setCursor(topX + 27, btnY + 3);
+  d.setTextColor(topFg, topBg);
+  d.print("TOP");
+  
+  // YOU кнопка
+  int youX = topX + btnW + spacing;
+  uint16_t youColor = (isInSectionSelector && sectionSel == 2) ? 0x07E0 : 
+                      (currentSection == SECTION_YOU) ? 0x07E0 : 0x8410;
+  uint16_t youBg = (isInSectionSelector && sectionSel == 2) ? 0x07E0 : 0x0000;
+  uint16_t youFg = (isInSectionSelector && sectionSel == 2) ? 0x0000 : youColor;
+  
+  drawBox(youX, btnY, btnW, btnH, youColor);
+  if (isInSectionSelector && sectionSel == 2) {
+    d.fillRect(youX + 1, btnY + 1, btnW - 2, btnH - 2, youBg);
+  }
+  d.setCursor(youX + 25, btnY + 3);
+  d.setTextColor(youFg, youBg);
+  d.print("YOU");
+  
+  // Profile info для YOU раздела (ПОСЛЕ кнопок)
+  if (currentSection == SECTION_YOU) {
+    int profileY = btnY + btnH + 4; // начальная Y для профиля
+    
+    // Имя пользователя
+    d.setCursor(2, profileY);
+    d.setTextColor(0x07FF, 0x0000); // cyan
+    d.print("User:");
+    d.setTextColor(0xFFFF, 0x0000); // white
+    d.print(profile.author);
+    
+    // Device ID (короткий)
+    d.setCursor(2, profileY + 10);
+    d.setTextColor(0x8410, 0x0000); // gray
+    d.print("ID:");
+    d.setTextColor(0xFFFF, 0x0000); // white
+    String shortId = deviceId.substring(0, min(16, (int)deviceId.length()));
+    d.print(shortId);
+    
+    // Total Likes (ВЫШЕ Posts)
+    d.setCursor(2, profileY + 20);
+    drawHeart(4, profileY + 20, 0xF800);
+    d.setCursor(10, profileY + 20);
+    d.setTextColor(0x8410, 0x0000); // gray
+    d.print("Total Likes:");
+    d.setTextColor(0xF800, 0x0000); // red
+    d.print(profile.totalLikes);
+    
+    // Posts (ниже Likes)
+    d.setCursor(2, profileY + 30);
+    d.setTextColor(0xFFE0, 0x0000); // yellow
+    d.print("Posts:");
+    d.setTextColor(0xFFFF, 0x0000);
+    d.print(profile.postCount);
+  }
+  
+  // Loading индикатор
+  if (isLoading) {
+    d.setCursor(70, 65);
+    d.setTextColor(0xFFE0, 0x0000);
+    d.print("Loading...");
+    return; // не рисуем посты пока грузится
+  }
+  
+  // Отображаем посты начиная с scrollOffset
+  // Для YOU раздела: 1 пост ниже (после профиля)
+  // Для NEW/TOP: 2 поста сразу после кнопок
+  int yPos = (currentSection == SECTION_YOU) ? 87 : 43;
+  int postsToShow = (currentSection == SECTION_YOU) ? 1 : 2;
+  int boxHeight = 42;
+  int boxSpacing = 3;
+  
+  for (int i = 0; i < postsToShow; i++) {
     int feedIdx = scrollOffset + i;
     if (feedIdx >= (int)feedCount) break;
     
     Post& p = FEED[feedIdx];
     int boxY = yPos + i * (boxHeight + boxSpacing);
     
-    // Рамка (зеленая для выбранного, белая для остальных)
-    uint16_t boxColor = (feedIdx == sel) ? 0x07E0 : 0x8410; // green / gray
+    // Рамка (зеленая для выбранного, серая для остальных)
+    uint16_t boxColor = (feedIdx == sel && !isInSectionSelector) ? 0x07E0 : 0x8410;
     drawBox(2, boxY, 236, boxHeight, boxColor);
     
     // Автор (верхняя строка внутри блока)
     d.setCursor(6, boxY + 2);
-    d.setTextColor(0xFFFF, 0x0000); // white
+    d.setTextColor(0xFFFF, 0x0000);
     d.print(p.author);
     
     // Текст поста (многострочный, до 3 строк)
     d.setTextColor(0xFFFF, 0x0000);
     String txt = p.text;
     int lineY = boxY + 10;
-    int charsPerLine = 38; // characters per line
+    int charsPerLine = 38;
     for (int line = 0; line < 3 && txt.length() > 0; line++) {
       d.setCursor(6, lineY);
       String part = txt.substring(0, min((int)txt.length(), charsPerLine));
@@ -854,32 +1130,23 @@ void drawUI() {
     }
     
     // Heart + likes count (bottom left)
-    // Black background under heart to cover border line
-    d.fillRect(7, boxY + 32, 12, 10, 0x0000); // black rectangle
-    drawHeart(11, boxY + 36, 0xF800); // red graphic heart
+    d.fillRect(7, boxY + 32, 12, 10, 0x0000);
+    drawHeart(11, boxY + 36, 0xF800);
     d.setCursor(18, boxY + 34);
     d.setTextColor(0xF800, 0x0000);
     d.print(p.likes);
     
     // Post creation date (bottom right)
-    // Format: "2024-01-23T15:30:45.123Z" -> "23.01.24 15:30"
     if (p.created_at.length() >= 19) {
-      String date = p.created_at.substring(8, 10) + "." +  // day
-                    p.created_at.substring(5, 7) + "." +   // month
-                    p.created_at.substring(2, 4) + " " +   // year (last 2 digits)
-                    p.created_at.substring(11, 16);        // time HH:MM
+      String date = p.created_at.substring(8, 10) + "." +
+                    p.created_at.substring(5, 7) + "." +
+                    p.created_at.substring(2, 4) + " " +
+                    p.created_at.substring(11, 16);
       d.setCursor(150, boxY + 34);
-      d.setTextColor(0x8410, 0x0000); // gray color
+      d.setTextColor(0x8410, 0x0000);
       d.print(date);
     }
   }
-  
-  // Управление внизу
-  d.setCursor(0, 118);
-  d.setTextColor(0xFFE0, 0x0000); // yellow
-  d.print("[W/A, Up/Dn] Scroll, [Enter] Like/Unlike");
-  d.setCursor(0, 126);
-  d.print("[Fn+Enter] Post, [R] Refresh Feed");
 }
 
 void setup() {
@@ -902,26 +1169,84 @@ void setup() {
 void loop(){
   M5Cardputer.update();
   wifiOK = (WiFi.status()==WL_CONNECTED);
+  
   if (M5Cardputer.Keyboard.isChange() && M5Cardputer.Keyboard.isPressed()){
+    
+    // Info окно - toggle
+    if (M5Cardputer.Keyboard.isKeyPressed('I') || M5Cardputer.Keyboard.isKeyPressed('i')) {
+      showingInfo = !showingInfo;
+      if (showingInfo) drawInfoPopup();
+      else drawUI();
+      return;
+    }
+    
+    // Закрытие Info окна любой клавишей
+    if (showingInfo) {
+      showingInfo = false;
+      drawUI();
+      return;
+    }
+    
+    // WiFi reconfig
     if (M5Cardputer.Keyboard.isKeyPressed('N') || M5Cardputer.Keyboard.isKeyPressed('n')) { 
       wifiForgetAndReconfig(); 
-      if (wifiOK) { apiStats(); apiFeed(); }
+      if (wifiOK) { apiStats(); loadCurrentSection(); }
       drawUI(); 
     }
-    else if (keyUpPressed()) { 
-      sel = max(0, sel-1); 
-      // Обновляем scrollOffset, чтобы выбранный пост был виден
-      if (sel < scrollOffset) scrollOffset = sel;
-      drawUI(); 
+    
+    // Навигация: вверх/вниз
+    else if (keyUpPressed()) {
+      if (isInSectionSelector) {
+        // В режиме выбора разделов - выходим к постам
+        isInSectionSelector = false;
+        drawUI();
+      } else if (sel == 0 && scrollOffset == 0) {
+        // Если на первом посту - переходим к выбору разделов
+        isInSectionSelector = true;
+        sectionSel = (int)currentSection; // текущий раздел выбран
+        drawUI();
+      } else {
+        // Обычная прокрутка постов вверх
+        sel = max(0, sel-1);
+        if (sel < scrollOffset) scrollOffset = sel;
+        drawUI();
+      }
     }
-    else if (keyDownPressed()) { 
-      sel = min((int)feedCount-1, sel+1); 
-      // Обновляем scrollOffset, чтобы выбранный пост был виден
-      if (sel >= scrollOffset + 2) scrollOffset = sel - 1;
-      drawUI(); 
+    else if (keyDownPressed()) {
+      if (isInSectionSelector) {
+        // Из выбора разделов - возвращаемся к постам
+        isInSectionSelector = false;
+        drawUI();
+      } else {
+        // Обычная прокрутка постов вниз
+        sel = min((int)feedCount-1, sel+1);
+        // Для YOU раздела показываем 1 пост, для остальных 2
+        int visiblePosts = (currentSection == SECTION_YOU) ? 1 : 2;
+        if (sel >= scrollOffset + visiblePosts) scrollOffset = sel - (visiblePosts - 1);
+        drawUI();
+      }
     }
+    
+    // Навигация: влево/вправо (переключение разделов)
+    else if (keyLeftPressed()) {
+      if (isInSectionSelector) {
+        sectionSel = max(0, sectionSel - 1);
+        drawUI();
+      }
+    }
+    else if (keyRightPressed()) {
+      if (isInSectionSelector) {
+        sectionSel = min(2, sectionSel + 1);
+        drawUI();
+      }
+    }
+    
+    // Refresh
     else if (M5Cardputer.Keyboard.isKeyPressed('R') || M5Cardputer.Keyboard.isKeyPressed('r')) { 
-      if (wifiOK) { apiStats(); apiFeed(); } 
+      if (wifiOK) { 
+        apiStats(); 
+        loadCurrentSection();
+      }
       drawUI(); 
     }
 #ifdef KEY_FN
@@ -934,8 +1259,19 @@ void loop(){
       drawUI();
     }
     else if (M5Cardputer.Keyboard.isKeyPressed(KEY_ENTER)) {
-      if (feedCount>0 && wifiOK) { apiLike(FEED[sel].id); apiFeed(); }
-      drawUI();
+      if (isInSectionSelector) {
+        // Подтверждение выбора раздела
+        currentSection = (Section)sectionSel;
+        isInSectionSelector = false;
+        loadCurrentSection();
+      } else if (feedCount>0 && wifiOK && !isInSectionSelector) {
+        // Лайк поста - тихое обновление без сброса позиции
+        apiLike(FEED[sel].id);
+        // Обновляем ленту тихо (без Loading, сохраняя позицию)
+        refreshCurrentSectionSilent();
+      } else {
+        drawUI();
+      }
     }
     else if (M5Cardputer.Keyboard.isKeyPressed('U') || M5Cardputer.Keyboard.isKeyPressed('u')) {
       String newName = promptInput("New username (3-24)", 24);

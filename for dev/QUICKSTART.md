@@ -31,12 +31,19 @@
 1. Go to supabase.com → Sign up
 2. Create new project (choose any name)
 3. Go to SQL Editor
-4. Copy SQL from readme.md (SUPABASE section)
+4. Copy SQL from BACKEND_UPDATE_INSTRUCTIONS.md (v0.2)
+   OR readme.md (includes like_count field + triggers)
 5. Paste and click "Run"
 6. Save these:
    - Project URL (Settings → API → URL)
    - Service Role Key (Settings → API → service_role key)
 ```
+
+**⚠️ Important for v0.2:**
+If upgrading from v0.1, run the SQL migration to add:
+- `like_count` column to posts table
+- Automatic like count triggers
+- Index for TOP section performance
 
 #### B. Cloudflare Worker
 ```bash
@@ -90,17 +97,24 @@
 
 ---
 
-## ⌨️ Quick Controls
+## ⌨️ Quick Controls (v0.2)
 
 | Key | Action |
 |-----|--------|
-| **W/A** | Scroll up/down |
-| **Enter** | Like/Unlike |
+| **; .** or **Up/Down** | Scroll posts |
+| **, /** or **Left/Right** | Switch sections (NEW/TOP/YOU) |
+| **Enter** | Like/Unlike OR confirm section |
 | **Fn+Enter** | New post |
-| **R** | Refresh |
+| **R** | Refresh current section |
 | **U** | Change username |
 | **N** | Change WiFi |
+| **I** | Show Info window (help) |
 | **Fn+C** | Clear device |
+
+**New Features:**
+- **NEW** section: Latest posts
+- **TOP** section: Most liked posts (all-time)
+- **YOU** section: Your profile + stats (Total Likes, Post count)
 
 ---
 
@@ -120,7 +134,7 @@
 
 ---
 
-## ✅ Success Check
+## ✅ Success Check (v0.2)
 
 Test your setup:
 
@@ -128,16 +142,27 @@ Test your setup:
    - Press Fn+Enter
    - Type "Hello MicroCast!"
    - Press Enter
-   - Should appear in feed
+   - Should appear in NEW section
 
 2. **Like test:**
    - Scroll to any post
    - Press Enter
-   - Heart should turn red ❤️
+   - Like counter increases (instant update!)
 
-3. **Refresh test:**
-   - Press R
-   - Feed updates
+3. **Section test:**
+   - Press ; (up) to reach section buttons
+   - Press , / to switch between NEW/TOP/YOU
+   - Press Enter to confirm
+
+4. **Profile test (YOU section):**
+   - Switch to YOU section
+   - See your Total Likes, Posts count
+   - Your posts appear below
+
+5. **Info test:**
+   - Press I
+   - Help window appears
+   - Press any key to close
 
 All working? **Congratulations! 🎉**
 
@@ -155,3 +180,29 @@ All working? **Congratulations! 🎉**
 **Need help?** Open an issue on GitHub!
 
 **Happy microblogging! 📱✨**
+
+---
+
+## 🆕 What's New in v0.2
+
+**Three Sections:**
+- NEW: Latest posts (created_at DESC)
+- TOP: Most liked posts (like_count DESC)
+- YOU: Personal profile with stats
+
+**New Endpoints:**
+- `/v1/best` - Get top posts by likes
+- `/v1/profile?device_id=xxx` - Get user profile + posts
+
+**Database Changes:**
+- Added `like_count` column (denormalized for performance)
+- Automatic triggers update like_count on like/unlike
+- Index on `(like_count DESC, created_at DESC)` for TOP section
+
+**UI Improvements:**
+- Info window ([I] key) with controls help
+- Section navigation with arrow keys
+- Instant like updates (no full refresh)
+- Beautiful section buttons with selection highlight
+
+*MicroCast v0.2 - Quick dev setup for M5Cardputer*

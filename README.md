@@ -1,4 +1,4 @@
-# 🚀 MicroCast - Pocket social microblogging platform for M5Cardputer. Post messages, like posts, read the feed! / ESP32-S3
+# 🚀 MicroCast - Pocket social microblogging platform for M5Cardputer / ESP32-S3
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I2I314IWIP)
 

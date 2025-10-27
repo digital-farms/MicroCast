@@ -1,5 +1,7 @@
 # 🚀 MicroCast - Pocket social microblogging platform for M5Cardputer / ESP32-S3
 
+<img width="1442" height="326" alt="MC_gh" src="https://github.com/user-attachments/assets/a5fa08b4-71dd-4202-bb70-442ec6c060e4" />
+
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I2I314IWIP)
 
 # 📱 User Guide

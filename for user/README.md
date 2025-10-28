@@ -82,7 +82,7 @@ The main feed will appear with latest posts.
 
 ```
 ┌──────────────────────────────────────┐
-│ MicroCast [15]          beta0.1      │
+│ MicroCast [15]          beta0.2      │
 │ [N]WiFi🟢 [U]User:alice   [I]Info   │
 │ ┌────┐ ┌────┐ ┌────┐                │
 │ │NEW │ │TOP │ │YOU │  ← Sections    │
@@ -90,12 +90,12 @@ The main feed will appear with latest posts.
 │ ┌──────────────────────────────────┐ │
 │ │ bob                              │ │
 │ │ Hello everyone!                  │ │
-│ │ ❤️ 5           23.10.25 14:30   │ │
+│ │ ❤️ 5  💬 3     23.10.25 14:30   │ │
 │ └──────────────────────────────────┘ │
 │ ┌──────────────────────────────────┐ │
 │ │ alice                            │ │
 │ │ First post here!                 │ │
-│ │ ❤️ 3           23.10.25 14:25   │ │
+│ │ ❤️ 3  💬 0     23.10.25 14:25   │ │
 │ └──────────────────────────────────┘ │
 └──────────────────────────────────────┘
 ```
@@ -122,6 +122,7 @@ The main feed will appear with latest posts.
 | **/ or Right** | Next section (when in section menu) |
 | **Enter** | Like/Unlike post OR confirm section |
 | **Fn + Enter** | Create new post |
+| **C** | View comments on selected post |
 | **R** | Refresh current section |
 | **U** | Change username |
 | **N** | Change WiFi |
@@ -159,6 +160,84 @@ The main feed will appear with latest posts.
 
 ---
 
+## 💬 Comments (NEW!)
+
+### Viewing Comments
+
+Each post now shows a comment counter: **💬 3**
+
+**To view comments:**
+1. Scroll to any post using **; .**
+2. Press **C** key
+3. Comments screen opens!
+
+```
+┌──────────────────────────────────┐
+│ Comments ========================│
+│ bob                              │
+│ Hello everyone! This is my...    │
+│ ❤️ 5  💬 3 comments              │
+│ ────────────────────────────────│
+│ alice                      14:30 │
+│ Great post!                      │
+│                                  │
+│ charlie                    14:25 │
+│ Thanks for sharing               │
+│                                  │
+│ [Fn+Enter] Write  [ESC] Back     │
+└──────────────────────────────────┘
+```
+
+**What you'll see:**
+- Original post at top
+- Up to 3 comments visible at once
+- Author name and time for each comment
+- Comment text (max 38 chars per line)
+
+**Navigation:**
+- **; .** - Scroll through comments
+- **ESC** - Return to main feed
+- **Fn+Enter** - Write a new comment
+
+### Writing Comments
+
+**To comment on a post:**
+1. Open comments with **C** key
+2. Press **Fn + Enter** (hold Fn, then press Enter)
+3. Type your comment (3-120 characters)
+4. Press **Enter** to see preview
+5. Press **Enter** again to post
+6. Or press **E** to edit, **ESC** to cancel
+
+**Comment Confirmation:**
+```
+┌──────────────────────────────────┐
+│ Confirm                          │
+│ Post comment:                    │
+│ ┌──────────────────────────────┐ │
+│ │ My first comment! Very cool! │ │
+│ └──────────────────────────────┘ │
+│ Send this?                       │
+│                                  │
+│ [Enter] Yes  [E] Edit  [ESC] No  │
+└──────────────────────────────────┘
+```
+
+**Tips:**
+- ✅ Comments are 3-120 characters
+- ✅ Wait 10 seconds between comments
+- ✅ Comments update the counter instantly
+- ✅ You can scroll through all comments
+- ❌ Can't delete comments (yet)
+- ❌ No emojis (they show as ?)
+
+**Comment Counter:**
+- **💬 0** - No comments yet (be first!)
+- **💬 3** - 3 comments on this post
+- Counter updates after you post
+
+---
+
 ## 📊 Your Profile (YOU Section)
 
 View your stats and posts in the **YOU** section!
@@ -172,7 +251,7 @@ View your stats and posts in the **YOU** section!
 │ ┌────────────────────────────┐   │
 │ │ alice                      │   │
 │ │ My latest post!            │   │
-│ │ ❤️ 8    26.10.25 19:41    │   │
+│ │ ❤️ 8  💬 2  26.10.25 19:41│   │
 │ └────────────────────────────┘   │
 └──────────────────────────────────┘
 ```
@@ -213,8 +292,8 @@ Press **I** key anytime to see controls help!
 ├─────────────────────────────┤
 │ [Up/Dn] Scroll [Enter] Like │
 │ [Lt/Rt] Sections [R] Refresh│
-│ [Fn+Enter] Post [U] Username│
-│ [N] WiFi  [I] Info          │
+│ [Fn+Enter] Post [C] Comments│
+│ [U] Username [N] WiFi [I]...│
 │                             │
 │ NEW latest TOP best YOU...  │
 │ Press any key to close      │
@@ -310,6 +389,8 @@ Use this if:
 - Use **YOU** section to track your stats
 - Refresh with **R** only when needed (likes update automatically!)
 - Check WiFi indicator often
+- Press **C** to read comments on interesting posts
+- Comment counter 💬 shows how active a discussion is
 
 ### Privacy
 - Don't use your real name
@@ -327,6 +408,9 @@ A: NEW shows latest posts, TOP shows most liked posts ever, YOU shows your profi
 **Q: Can I delete my posts?**  
 A: No, posts are permanent once posted.
 
+**Q: Can I delete my comments?**  
+A: No, comments are also permanent once posted.
+
 **Q: Can I send private messages?**  
 A: No, all posts are public.
 
@@ -341,6 +425,12 @@ A: Total Likes = all likes you've received across all your posts (all-time).
 
 **Q: Can I see who liked my posts?**  
 A: No, only the total count is shown.
+
+**Q: How many comments can I see?**  
+A: All comments are loaded, 3 visible at a time. Scroll with ; . keys.
+
+**Q: Can I reply to a specific comment?**  
+A: No, all comments are on the post level (no nested replies).
 
 **Q: Can I use emojis?**  
 A: No, only English letters and symbols work.
@@ -396,9 +486,17 @@ MicroCast is all about simple, quick communication.
 
 ---
 
-*MicroCast v0.2 - Made for M5Cardputer community*
+*MicroCast v0.3 - Made for M5Cardputer community*
 
-**New in v0.2:**
+**New in v0.3:**
+- 💬 **Comments system!** View and post comments on any post
+- 🔢 Comment counter on all posts (💬 N)
+- 📝 Write comments with Fn+Enter in comments view
+- 📜 Scroll through comments with ; . keys
+- ✅ Comment confirmation before posting
+- 🎨 Beautiful comments UI with icons
+
+**Previous (v0.2):**
 - 📊 Three sections: NEW, TOP, YOU
 - ℹ️ Info window with quick help ([I] key)
 - 🏆 TOP section shows most liked posts

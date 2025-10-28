@@ -1239,7 +1239,7 @@ void drawUI() {
   // beta0.1 справа
   d.setCursor(190, 0);
   d.setTextColor(0xF800, 0x0000); // red
-  d.println("beta0.2");
+  d.println("beta0.3");
   
   // Строка 2: подчеркивание
   d.setCursor(0, 8);

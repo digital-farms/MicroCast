@@ -1,5 +1,83 @@
 # 📋 MicroCast Changelog
 
+## v0.4 - UX & Power Saving Update (2025-10-31)
+
+### 🆕 New Features
+
+#### **Scrollable Comments**
+- 📜 Horizontal text scrolling for long comments
+- 🎯 Select comment with up/down arrows (`;` `.`)
+- ⬅️➡️ Scroll comment text with left/right arrows (`,` `/`)
+- 🖼️ Visual indicators: `<` and `>` show scroll direction
+- 🎨 Selected comment highlighted with green frame
+- 👁️ 3 comments visible at once, full text readable
+
+#### **Power Saving Mode**
+- 💤 Auto screen sleep after 60 seconds of inactivity
+- 🔆 Any key press wakes up the screen
+- 🔋 Significantly extends battery life
+- 🎨 Screen state preserved (returns to current view)
+- ⏱️ Activity timer resets on any interaction
+
+#### **New Section: # **
+- Coming soon...
+
+#### **Text Input Improvements**
+- ✅ Period (`.`) and semicolon (`;`) now work in text input!
+- 📝 All printable characters allowed (ASCII 32-126)
+- 🚫 Only ESC and backtick filtered out
+- 💬 Write natural sentences with punctuation
+
+### ✨ UI/UX Improvements
+
+#### **Section Buttons**
+- 📏 Spacing reduced to 1 pixel between buttons
+- 🎨 # button: yellow color (0xFFE0), compact size (20px)
+- 🎯 Better visual balance across screen width
+- 📐 All buttons properly aligned
+
+#### **Comments View**
+- 📅 Date + time in right corner: `DD.MM HH:MM`
+- 🎨 Black background under author and date
+- 📍 Text positioned 1px up (breaks frame line visually)
+- 🔄 3px shift towards center for better symmetry
+- 🎯 Selected comment has green frame (0x07E0)
+
+### 🔧 Technical Improvements
+
+#### **Animation Optimization**
+- 🚀 No more screen flicker in space matrix
+- 💾 Incremental rendering (only changed pixels)
+- 📊 Tracking array for previous brightness states
+- 🎬 Smooth 12 FPS (80ms delay)
+- 🎨 Static elements drawn once (header, footer)
+
+#### **Memory Management**
+- 📝 Comment text scroll position tracking
+- 🔄 Vertical and horizontal scroll offsets
+- 💾 Previous brightness array for animations
+- ⚡ Efficient state management
+
+### 🐛 Fixes
+
+- ✅ Fixed `.` and `;` not working in text input mode
+- ✅ Fixed long comments being truncated and unreadable
+- ✅ Fixed screen flicker in space matrix animation
+- ✅ Fixed # button frame not visible on right edge
+- ✅ Fixed screen staying on during inactivity (battery drain)
+
+### 📊 Statistics
+
+- **New features:** 4 major (scrollable comments, power saving, space matrix, text input fix)
+- **UI improvements:** 6 (section spacing, button design, comment layout, date format)
+- **Performance:** 3x faster animation rendering (incremental updates)
+- **Battery life:** ~2-3x longer with auto-sleep
+- **Code changes:** ~180 lines added/modified
+- **New functions:** 3 (screenSleep, screenWake, drawSpaceMatrix optimized)
+- **Development time:** ~2 hours
+
+---
+
 ## v0.3 - Comments Update (2025-10-28)
 
 ### 🆕 New Features

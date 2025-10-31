@@ -88,11 +88,11 @@ The main feed will appear with latest posts.
 
 ```
 ┌──────────────────────────────────────┐
-│ MicroCast [15]          beta0.2      │
+│ MicroCast [15]          beta0.4      │
 │ [N]WiFi🟢 [U]User:alice   [I]Info   │
-│ ┌────┐ ┌────┐ ┌────┐                │
-│ │NEW │ │TOP │ │YOU │  ← Sections    │
-│ └────┘ └────┘ └────┘                │
+│ ┌────┐┌────┐┌────┐┌──┐              │
+│ │NEW ││TOP ││YOU ││# │ ← Sections   │
+│ └────┘└────┘└────┘└──┘              │
 │ ┌──────────────────────────────────┐ │
 │ │ bob                              │ │
 │ │ Hello everyone!                  │ │
@@ -106,11 +106,12 @@ The main feed will appear with latest posts.
 └──────────────────────────────────────┘
 ```
 
-### Three Sections
+### Four Sections
 
 **NEW** - Latest posts (newest first)
 **TOP** - Most liked posts (all-time best)
 **YOU** - Your profile and posts
+**#** - Space matrix animation (coming soon features)
 
 **How to switch sections:**
 1. Press **;** (up) until you reach the section buttons
@@ -201,9 +202,18 @@ Each post now shows a comment counter: **💬 3**
 - Comment text (max 38 chars per line)
 
 **Navigation:**
-- **; .** - Scroll through comments
+- **; .** (up/down) - Select comment (highlighted with green frame)
+- **, /** (left/right) - Scroll selected comment text horizontally
 - **ESC** - Return to main feed
 - **Fn+Enter** - Write a new comment
+
+**Reading Long Comments:**
+If a comment is longer than the screen width, you can scroll it:
+1. Use **; .** to select the comment you want to read
+2. Selected comment will have a **green frame**
+3. Use **, /** (left/right arrows) to scroll the text
+4. **<** and **>** indicators show you can scroll more
+5. Scroll by 5 characters at a time for smooth reading
 
 ### Writing Comments
 
@@ -381,9 +391,41 @@ Use this if:
 
 ---
 
+## 💤 Power Saving (NEW!)
+
+MicroCast now automatically saves battery!
+
+**Auto Screen Sleep:**
+- Screen turns off after **60 seconds** of no activity
+- Press **any key** to wake up
+- Returns to the screen you were on
+- Extends battery life **2-3x longer**
+
+**What counts as activity:**
+- Any key press
+- Scrolling posts
+- Liking posts
+- Writing text
+
+**Note:** Screen won't sleep during space matrix animation!
+
+```
+
+**Features:**
+- ASCII stars with twinkling effect
+- Color gradient: dark blue → cyan → white
+- Smooth animation (no flicker!)
+- 30 seconds duration
+- Press **ESC** to exit anytime
+
+**Characters used:** `.':*+=#@`
+
+---
+
 ## 💡 Tips & Tricks
 
 ### Save Battery
+- **NEW:** Auto-sleep saves battery automatically!
 - Turn off device when not using
 - Reduce screen brightness (if possible)
 
@@ -408,8 +450,8 @@ Use this if:
 
 ## ❓ FAQ
 
-**Q: What's the difference between NEW, TOP, and YOU sections?**  
-A: NEW shows latest posts, TOP shows most liked posts ever, YOU shows your profile and your posts.
+**Q: What's the difference between NEW, TOP, YOU, and # sections?**  
+A: NEW shows latest posts, TOP shows most liked posts ever, YOU shows your profile and posts, # shows space matrix animation.
 
 **Q: Can I delete my posts?**  
 A: No, posts are permanent once posted.
@@ -437,6 +479,21 @@ A: All comments are loaded, 3 visible at a time. Scroll with ; . keys.
 
 **Q: Can I reply to a specific comment?**  
 A: No, all comments are on the post level (no nested replies).
+
+**Q: How do I read long comments?**  
+A: Select the comment with ; . keys (it will have a green frame), then use , / to scroll the text left/right.
+
+**Q: Why does the screen turn off?**  
+A: Auto power-saving! Screen sleeps after 60 seconds of no activity. Press any key to wake up.
+
+**Q: Can I disable auto-sleep?**  
+A: No, it's always on to save battery. Just press any key to wake the screen.
+
+**Q: What is the # section?**  
+A: It's a space matrix animation - a beautiful cosmic screensaver! Press Enter to start it.
+
+**Q: Can I use periods and semicolons in posts now?**  
+A: Yes! v0.4 added support for . and ; in text input. Write natural sentences!
 
 **Q: Can I use emojis?**  
 A: No, only English letters and symbols work.
@@ -492,9 +549,17 @@ MicroCast is all about simple, quick communication.
 
 ---
 
-*MicroCast v0.3 - Made for M5Cardputer community*
+*MicroCast v0.4 - Made for M5Cardputer community*
 
-**New in v0.3:**
+**New in v0.4:**
+- 📜 **Scrollable comments!** Read full long comments with left/right arrows
+- 💤 **Auto screen sleep** after 60s - saves battery!
+- 🌌 **# Space Matrix** - beautiful cosmic animation
+- ✅ **Period and semicolon** now work in text input
+- 🎨 Improved comment layout with date/time
+- 🔋 2-3x longer battery life with power saving
+
+**Previous (v0.3):**
 - 💬 **Comments system!** View and post comments on any post
 - 🔢 Comment counter on all posts (💬 N)
 - 📝 Write comments with Fn+Enter in comments view

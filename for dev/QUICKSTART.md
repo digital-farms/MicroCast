@@ -97,24 +97,46 @@ If upgrading from v0.1, run the SQL migration to add:
 
 ---
 
-## ⌨️ Quick Controls (v0.2)
+## ⌨️ Quick Controls (v0.6)
 
 | Key | Action |
 |-----|--------|
-| **; .** or **Up/Down** | Scroll posts |
-| **, /** or **Left/Right** | Switch sections (NEW/TOP/YOU) |
-| **Enter** | Like/Unlike OR confirm section |
-| **Fn+Enter** | New post |
+| **; .** or **Up/Down** | Scroll posts/comments |
+| **, /** or **Left/Right** | Switch sections / Scroll comment text |
+| **Enter** | Like/Unlike OR confirm selection |
+| **Fn+Enter** | New post / New comment |
+| **M** | Open Donate QR popup |
+| **Enter on MicroCast** | Open Donate QR (when header focused) |
+| **C** | View comments on post |
 | **R** | Refresh current section |
 | **U** | Change username |
-| **N** | Change WiFi |
+| **N** | Add new WiFi network |
+| **S** | Settings menu (in YOU section) |
+| **Opt+R** | Show Recovery Code (backup) |
 | **I** | Show Info window (help) |
-| **Fn+C** | Clear device |
+| **Fn+Opt+Del** | Clear device (with confirmation) |
 
-**New Features:**
+**New Features (v0.6):**
+- **Recovery Code:** Press **Opt+R** to view backup code (save it!)
+- **Account Restore:** Recover username after device reset
+- **Secure Design:** Code stored only on device
+- **Improved Clear:** Fn+Opt+Del with confirmation
+- **Updated Help:** Info popup includes all new controls
+- **Donate QR:** Press **M** or focus header **MicroCast** and press **Enter** to open QR (ko-fi.com/kotov)
+
+**From v0.5:**
+- **Settings Menu:** Press **S** in YOU section
+- **Notifications:** Background checks, sound, LED alerts
+- **WiFi List:** Save up to 5 networks, auto-connect
+- **Battery:** Real-time level in top bar
+- **Badge:** Unread post count on NEW button
+
+**Previous Features:**
 - **NEW** section: Latest posts
 - **TOP** section: Most liked posts (all-time)
 - **YOU** section: Your profile + stats (Total Likes, Post count)
+- **Comments:** View and post comments on any post
+- **Auto-sleep:** Screen off after 60s inactivity
 
 ---
 
@@ -134,7 +156,7 @@ If upgrading from v0.1, run the SQL migration to add:
 
 ---
 
-## ✅ Success Check (v0.2)
+## ✅ Success Check (v0.6)
 
 Test your setup:
 
@@ -149,20 +171,51 @@ Test your setup:
    - Press Enter
    - Like counter increases (instant update!)
 
-3. **Section test:**
-   - Press ; (up) to reach section buttons
-   - Press , / to switch between NEW/TOP/YOU
-   - Press Enter to confirm
+3. **Comments test:**
+   - Press C on any post
+   - Comments view opens
+   - Press Fn+Enter to write comment
+   - Type and send comment
 
-4. **Profile test (YOU section):**
+4. **Settings test:**
    - Switch to YOU section
-   - See your Total Likes, Posts count
-   - Your posts appear below
+   - Press S key
+   - Settings menu appears
+   - Navigate with ; .
+   - Press Enter to open submenu
 
-5. **Info test:**
-   - Press I
-   - Help window appears
-   - Press any key to close
+5. **Notifications test:**
+   - In Settings, select Notifications
+   - Press 1 to toggle notifications
+   - Press +/- to change interval
+   - Press 2 for sound, 3 for LED
+   - Check if settings save (ESC and reopen)
+
+6. **WiFi List test:**
+   - In Settings, select WiFi List
+   - See your connected network with [*]
+   - Press A to add another network
+   - ESC to cancel without connecting
+
+7. **Battery test:**
+   - Check top bar for battery indicator
+   - Should show real percentage (not 100%)
+
+8. **Badge test:**
+   - Wait for notification check
+   - NEW button should show badge if unread posts
+
+9. **Recovery Code test:**
+   - Press Opt+R anywhere
+   - Recovery code popup appears
+   - Code displayed (e.g., ABC-123)
+   - Press Enter to close
+
+10. **Device Clear test:**
+   - Press Fn+Opt+Del
+   - Confirmation screen appears
+   - Shows what will be deleted
+   - ESC to cancel (don't actually clear!)
 
 All working? **Congratulations! 🎉**
 
@@ -183,26 +236,44 @@ All working? **Congratulations! 🎉**
 
 ---
 
-## 🆕 What's New in v0.2
+## 🆕 What's New in v0.6
 
-**Three Sections:**
-- NEW: Latest posts (created_at DESC)
-- TOP: Most liked posts (like_count DESC)
-- YOU: Personal profile with stats
+**Recovery Code System:**
+- Unique backup code (ABC-123 format) for each account
+- Press Opt+R to view code anytime
+- Account restore after device reset
+- Code stored locally on device (secure!)
+- Migration flow: existing users get code on first stats load
 
-**New Endpoints:**
-- `/v1/best` - Get top posts by likes
-- `/v1/profile?device_id=xxx` - Get user profile + posts
-
-**Database Changes:**
-- Added `like_count` column (denormalized for performance)
-- Automatic triggers update like_count on like/unlike
-- Index on `(like_count DESC, created_at DESC)` for TOP section
+**Improved Device Clear:**
+- New combo: Fn+Opt+Del (safer than old Fn+C)
+- Confirmation screen prevents accidental wipes
+- Shows what will be deleted before clearing
+- Graceful restart after clear
 
 **UI Improvements:**
-- Info window ([I] key) with controls help
-- Section navigation with arrow keys
-- Instant like updates (no full refresh)
-- Beautiful section buttons with selection highlight
+- Info popup updated with new controls
+- YOU section shows [Opt+R] Code and [S] Settings
+- Recovery code popup with centered design
+- Registration menu no longer flickers
 
-*MicroCast v0.2 - Quick dev setup for M5Cardputer*
+**Screen Timeout Fix:**
+- Timer resets on ALL key presses (arrows, text, etc.)
+- Works in text input, WiFi selection, confirmations
+- Consistent 60-second timeout everywhere
+
+**Security:**
+- Removed insecure GET /v1/recovery_code endpoint
+- Code shown only via local Opt+R (can't be stolen remotely)
+- Safe account restore via POST /v1/recovery_verify
+
+**Backend Changes:**
+- SQL migration adds recovery_code column
+- Trigger auto-generates code on registration
+- Recovery code returned once in /v1/register and /v1/stats
+- New endpoint: POST /v1/recovery_verify (for restore)
+
+**All v0.5 Features Included:**
+- Settings menu, Notifications, Multi-WiFi, Battery, Badge, Full comment scrolling
+
+*MicroCast v0.6 - Quick dev setup for M5Cardputer*

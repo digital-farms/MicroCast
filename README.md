@@ -2,7 +2,7 @@
 
 <img width="1442" height="326" alt="MC_gh" src="https://github.com/user-attachments/assets/a5fa08b4-71dd-4202-bb70-442ec6c060e4" />
 
-[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I2I314IWIP)
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/kotov)
 
 # 📱 User Guide
 
@@ -111,7 +111,6 @@ The main feed will appear with latest posts.
 **NEW** - Latest posts (newest first)
 **TOP** - Most liked posts (all-time best)
 **YOU** - Your profile and posts
-**#** - Space matrix animation (coming soon features)
 
 **How to switch sections:**
 1. Press **;** (up) until you reach the section buttons
@@ -129,11 +128,16 @@ The main feed will appear with latest posts.
 | **/ or Right** | Next section (when in section menu) |
 | **Enter** | Like/Unlike post OR confirm section |
 | **Fn + Enter** | Create new post |
+| **M** | Open Donate QR popup |
+| **Enter on MicroCast** | Open Donate QR (when header is focused) |
 | **C** | View comments on selected post |
 | **R** | Refresh current section |
 | **U** | Change username |
-| **N** | Change WiFi |
+| **N** | Add new WiFi network |
+| **S** | Settings menu (in YOU section) |
+| **Opt + R** | Show Recovery Code (save to restore account) |
 | **I** | Show Info window (controls help) |
+| **Fn + Opt + Del** | Clear device (requires confirmation) |
 
 ---
 
@@ -199,7 +203,7 @@ Each post now shows a comment counter: **💬 3**
 - Original post at top
 - Up to 3 comments visible at once
 - Author name and time for each comment
-- Comment text (max 38 chars per line)
+- Comment text (up to 120 chars, scrollable)
 
 **Navigation:**
 - **; .** (up/down) - Select comment (highlighted with green frame)
@@ -322,20 +326,125 @@ Press **I** key anytime to see controls help!
 
 ---
 
+## ⚙️ Settings Menu (NEW!)
+
+Access advanced settings from the **YOU** section!
+
+### How to Open
+1. Switch to **YOU** section
+2. Press **S** key
+3. Settings menu opens
+
+```
+┌──────────────────────────────────┐
+│ Settings                         │
+│ ────────────────────────────────│
+│  > Notifications                 │
+│    WiFi List                     │
+│                                  │
+│ [;/.] Navigate  [Enter] Select   │
+│ [ESC] Back                       │
+└──────────────────────────────────┘
+```
+
+### Notifications Settings
+
+Configure push notifications for new posts:
+
+```
+┌──────────────────────────────────┐
+│ Settings > Notifications         │
+│ ────────────────────────────────│
+│ [X] Enable notifications         │
+│ Check interval: 10 min (1-60)    │
+│ [X] Sound alert                  │
+│ [X] LED indicator                │
+│                                  │
+│ Last check: 5 min ago            │
+│ Unread: 3 posts                  │
+│                                  │
+│ [1] Toggle  [2] Sound  [3] LED   │
+│ [+/-] Interval  [ESC] Back       │
+└──────────────────────────────────┘
+```
+
+**Features:**
+- 🔔 **Enable/disable** notifications
+- ⏱️ **Interval:** 1, 5, 10, 15, 30, or 60 minutes
+- 🔊 **Sound alert:** Beep once per batch of new posts
+- 💡 **LED indicator:** Green blinking every 10 seconds
+- 📊 **Status:** See last check time and unread count
+
+**Controls:**
+- **[1]** - Toggle notifications on/off
+- **[2]** - Toggle sound alert
+- **[3]** - Toggle LED indicator
+- **[+]** - Increase interval (1→5→10→15→30→60)
+- **[-]** - Decrease interval (60→30→15→10→5→1)
+- **[ESC]** - Save and return
+
+**Badge Indicator:**
+When you have unread posts, a red badge appears on the **NEW** section button showing the count!
+
+### WiFi List Settings
+
+Manage multiple WiFi networks (up to 5):
+
+```
+┌──────────────────────────────────┐
+│ Settings > WiFi List             │
+│ ────────────────────────────────│
+│  > Home WiFi             [*]     │
+│    Office Network                │
+│    Coffee Shop Guest             │
+│                                  │
+│ [;/.] Select  [A] Add            │
+│ [D] Delete  [ESC] Back           │
+└──────────────────────────────────┘
+```
+
+**Features:**
+- 📡 **Save up to 5** Wi-Fi networks
+- 🔄 **Auto-connect** to any available saved network
+- ⭐ **Current network** marked with **[*]**
+- ➕ **Add** new networks without disconnecting
+- 🗑️ **Delete** networks you no longer use
+
+**Controls:**
+- **[; .]** - Navigate through saved networks
+- **[A]** - Add new network (scans available networks)
+- **[D]** - Delete selected network
+- **[ESC]** - Return to Settings menu
+
+**How it works:**
+1. Device stores up to 5 Wi-Fi credentials
+2. On startup, auto-connects to any available saved network
+3. No need to manually select every time!
+4. Add networks from different locations (home, work, cafe)
+5. Device always tries to connect to a saved network first
+
+---
+
 ## 🌐 WiFi Settings
 
-### Connect to Different Network
-1. Press **N** key
+### Quick Add Network
+Press **N** key anywhere to add a new Wi-Fi network:
+1. Device scans for available networks
 2. Select network with **; .**
 3. Press **Enter**
-4. Type password
+4. Type password (if needed)
 5. Press **Enter**
+6. **Network is saved** to your list!
+7. Press **ESC** at any time to cancel
+
+**Note:** Pressing **N** no longer disconnects you from current WiFi! It just adds a new network to your saved list.
 
 ### WiFi Indicator
 - 🟢 **Green circle** = Connected
 - 🔴 **Red circle** = Disconnected
+- **[N]WiFi🟢** shows in top bar
 
-If red, press **N** to reconnect.
+If red, press **N** to add/connect to a network.
 
 ---
 
@@ -369,25 +478,86 @@ If red, press **N** to reconnect.
 
 ---
 
+## 🔐 Recovery Code (NEW!)
+
+**Save your account in case of device reset!**
+
+### What is Recovery Code?
+
+When you register, MicroCast creates a special code (like `ABC-123`) that lets you restore your account if:
+- Device breaks or resets
+- You lose your settings
+- Something goes wrong
+
+### How to See Your Code
+
+1. Press **Opt + R** anywhere in the app
+2. Your recovery code appears on screen
+3. **WRITE IT DOWN!** Take a photo or save it somewhere safe
+4. You'll need it to restore your account
+
+```
+┌──────────────────────────┐
+│   Recovery Code          │
+├──────────────────────────┤
+│                          │
+│       ABC-123            │
+│                          │
+│   WRITE IT DOWN!         │
+│ You'll need it to restore│
+│ account if device resets.│
+│                          │
+│ [Enter] Close            │
+└──────────────────────────┘
+```
+
+**Important:**
+- ✅ Code is shown ONLY on your device (secure!)
+- ✅ You can view it anytime with Opt+R
+- ✅ Anyone with the code can access your account
+- ⚠️ Keep it secret and safe!
+
+### How to Restore Account
+
+If your device resets:
+
+1. First run will ask: **New Registration** or **Restore Account**
+2. Choose **Restore Account**
+3. Enter your recovery code (e.g., `ABC-123`)
+4. Press Enter
+5. Your username and device_id are restored!
+
+**Without Recovery Code:**
+- You'll lose access to your old username
+- All your posts stay, but you can't post as that user anymore
+- You'll have to register a new username
+
+**Save your code now! Press Opt+R** 🔐
+
+---
+
 ## 🧹 Reset Everything
 
 **Warning:** This erases all your data!
 
-1. Press **Fn + C** (hold Fn, press C)
+1. Press **Fn + Opt + Del** (hold Fn and Opt, press Del)
 2. Confirmation screen appears
 3. Press **Enter** to confirm
-4. Device will reset
-5. Unplug and replug to restart
+4. Device will restart
 
 **What gets deleted:**
 - Your username
 - WiFi settings
 - Device ID
+- Recovery code
+- All settings
 
 Use this if:
 - You want to start fresh
 - Selling/giving away device
 - Something is broken
+
+**⚠️ Save your recovery code before reset if you want to restore later!**
 
 ---
 
@@ -489,11 +659,17 @@ A: Auto power-saving! Screen sleeps after 60 seconds of no activity. Press any k
 **Q: Can I disable auto-sleep?**  
 A: No, it's always on to save battery. Just press any key to wake the screen.
 
-**Q: What is the # section?**  
-A: It's a space matrix animation - a beautiful cosmic screensaver! Press Enter to start it.
+**Q: What is a Recovery Code?**  
+A: A backup code (like ABC-123) to restore your account if device resets. Press Opt+R to see it.
+
+**Q: What happens if I lose my recovery code?**  
+A: You'll lose access to your username forever. Your posts stay, but you can't post as that user anymore. Always save your code!
 
 **Q: Can I use periods and semicolons in posts now?**  
-A: Yes! v0.4 added support for . and ; in text input. Write natural sentences!
+A: Yes! Write natural sentences with punctuation!
+
+**Q: How do I change the device reset button?**  
+A: Press Fn+Opt+Del (not Fn+C anymore in v0.6) for safer accidental press protection.
 
 **Q: Can I use emojis?**  
 A: No, only English letters and symbols work.
@@ -512,6 +688,21 @@ A: Just pick a username - no email or password needed!
 
 **Q: What does the device count [N] mean?**  
 A: Shows how many devices are registered on the network.
+
+**Q: How do I see battery level?**  
+A: Battery indicator shows in the top bar with icon and percentage. Updates automatically.
+
+**Q: How do I manage notifications?**  
+A: Press **S** in YOU section → Settings → Notifications. Configure interval, sound, LED.
+
+**Q: Can I save multiple Wi-Fi networks?**  
+A: Yes! Up to 5 networks. Press **S** → WiFi List to manage them.
+
+**Q: Does pressing N disconnect me from WiFi?**  
+A: No! In v0.5, **N** just adds a new network without disconnecting.
+
+**Q: How do I read a comment that's 120 characters long?**  
+A: Select it with **; .** (green frame appears), then scroll with **, /** arrows. All text is accessible!
 
 ---
 
@@ -549,9 +740,25 @@ MicroCast is all about simple, quick communication.
 
 ---
 
-*MicroCast v0.4 - Made for M5Cardputer community*
+*MicroCast v0.6 - Made for M5Cardputer community*
 
-**New in v0.4:**
+**New in v0.6:**
+- 🔐 **Recovery Code System!** Save your account with a backup code
+- 🔄 **Account Restore!** Recover username after device reset
+- 🛡️ **Secure Design!** Code shown only on your device
+- 🔐 **Opt+R** - View your recovery code anytime
+- 🗑️ **Fn+Opt+Del** - New device clear combo (safer)
+- ℹ️ **Updated Help** - Info popup with all new controls
+- 💸 **Donate QR popup** — press **M** or focus header **MicroCast** and press **Enter**
+- 🎨 **Clean layout** — large square QR left, text on right; Telegram (cyan), Reddit (orange)
+- ⚙️ **Settings Menu** (YOU → S)
+- 🔔 **Notifications** (intervals, sound, LED)
+- 📡 **Multi‑WiFi** (до 5 сетей, авто‑подключение)
+- 📛 **Unread Badge** на кнопке NEW
+- 🔋 **Battery Level** в верхней строке
+- 📜 **Full Comment Scrolling** до 120 символов
+
+**Previous (v0.4):**
 - 📜 **Scrollable comments!** Read full long comments with left/right arrows
 - 💤 **Auto screen sleep** after 60s - saves battery!
 - 🌌 **# Space Matrix** - beautiful cosmic animation

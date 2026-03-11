@@ -1,5 +1,83 @@
 # 📋 MicroCast Changelog
 
+## v0.7 - OTA & Roles Update (2025-11-11)
+
+### 🆕 New Features
+
+#### **OTA (Over-The-Air) Updates**
+- 📡 **Wireless Firmware Updates** — check and install updates without USB cable
+- 🔄 **Manual Check** — Settings → Check Updates menu option
+- 🟢 **Auto Background Check** — silent check every 24 hours
+- 📍 **Update Indicator** — green dot next to version in header when update available
+- ⚠️ **Safety Warnings** — "Do NOT turn off device" during update
+- ✅ **Progress Bar** — visual progress with file size and percentage
+- 🔄 **Auto Restart** — device reboots automatically after successful update
+- ❌ **Safe Failure** — if update fails, device continues with current version
+
+#### **Colored Nicknames (Role System)**
+- 🎨 **Color-coded usernames** based on platform roles:
+  - **Cyan (0x07FF)** — default for all regular users
+  - **Red (0xF800)** — admin/moderator users
+  - **Yellow (0xFFE0)** — OG (early adopters, VIP)
+- 📊 **Automatic assignment** — colors set server-side by platform admin
+- 🔄 **Real-time display** — colors shown in feed, comments, and profile
+
+#### **Fixed Post Timestamps**
+- ⏰ **Accurate relative time** — posts no longer always show "now"
+- 🔄 **Server time reference** — API returns `server_time` for correct relative calculation
+- 📍 **Works everywhere** — feed, best, profile, and comments all use server time
+
+#### **Full Post Text in Comments**
+- 📝 **Dynamic layout** — original post shown with full text (not truncated)
+- 📏 **Adaptive height** — separator and comments position adjust based on post length
+- 👁️ **No more truncation** — up to 6 lines of post text visible
+- 🔄 **Variable comment count** — more comments shown if post is short
+
+#### **Truncation Indicator in Feed**
+- ✂️ **"..." indicator** — shows when post text doesn't fit in 3 lines
+- 📏 **114 chars limit** — posts longer than 114 chars show truncation marker
+- 👆 **Hint to open comments** — click [C] to see full text
+
+#### **Improved Battery Accuracy**
+- 🔋 **Voltage-based calculation** — uses AXP2101 PMIC voltage reading
+- 📊 **Non-linear mapping** — better reflects actual battery percentage
+- 🔄 **4-sample smoothing** — moving average for stable readings
+- 📍 **UI fix** — OTA indicator no longer overlaps battery display
+
+### 🐛 Fixes
+
+- ✅ **Time display bug** — posts always showed "now" due to wrong reference time
+- ✅ **Time display in comments** — same fix applied to comment timestamps
+- ✅ **UI overlap** — "UPD" text no longer overlaps battery indicator (replaced with dot)
+- ✅ **Battery accuracy** — percentage now matches actual charge level
+- ✅ **Battery smoothing** — readings no longer jump around
+
+### 📊 Statistics
+
+- **New features:** 6 major (OTA updates, colored nicknames, timestamp fix, full post text, truncation indicator, battery improvements)
+- **Worker changes:** 4 endpoints updated, 2 new helper functions, 1 new field
+- **Database changes:** 1 new column
+- **Client changes:** ~180 lines added/modified
+- **UI screens:** 3 new (OTA check, OTA progress, OTA confirmation)
+- **Bug fixes:** 6 (time display, UI overlap, battery accuracy)
+- **Development time:** ~4 hours
+- **Backward compatible:** Yes (server_time and name_color optional)
+
+### 🔄 Migration from v0.6
+
+**Automatic!** v0.7 seamlessly migrates existing users:
+1. ✅ On first launch, server_time enables accurate timestamps
+2. ✅ All existing posts get correct relative time
+3. ✅ All users default to cyan (no manual action needed)
+4. ✅ Admin can manually assign roles in Supabase anytime
+
+**What's new on first launch:**
+1. Green dot may appear if update available (requires deployed Worker)
+2. Timestamps become accurate (requires deployed Worker)
+3. Battery reading more accurate (new code, no server needed)
+
+---
+
 ## v0.6 - Recovery Code Update (2025-11-05)
 
 ### 🆕 New Features
@@ -208,14 +286,6 @@ First Run:
 - Real-time comment counter on posts
 - Beautiful comments UI with scroll support
 
-#### **Backend**
-- New table: `comments` (id, post_id, device_id, author, text, created_at)
-- New field: `comment_count` in posts table (denormalized for performance)
-- Automatic triggers to update comment count
-- New API: `GET /v1/comments?post_id=xxx`
-- New API: `POST /v1/comment`
-- Rate limiting: 1 comment per 10 seconds
-
 #### **UI/UX**
 - 💬 Comment bubble icon on posts (cyan)
 - Comment counter next to likes: `❤️5  💬3`
@@ -270,66 +340,6 @@ First Run:
 - Fixed comments preview layout spacing
 - Fixed hints position in comments view (moved to y=125)
 
-### 📊 Technical Changes
-
-#### **Database**
-```sql
--- New table
-CREATE TABLE comments (...)
-
--- New column
-ALTER TABLE posts ADD COLUMN comment_count INT DEFAULT 0;
-
--- Triggers
-CREATE TRIGGER increment_comment_count ...
-CREATE TRIGGER decrement_comment_count ...
-```
-
-#### **API**
-```javascript
-// New endpoints
-GET  /v1/comments?post_id=xxx
-POST /v1/comment
-
-// Updated endpoints (added comments field)
-GET  /v1/feed
-GET  /v1/best  
-GET  /v1/profile
-```
-
-#### **Client**
-```cpp
-// New structures
-struct Comment { String id, author, text, created_at; };
-Comment COMMENTS[20];
-bool viewingComments = false;
-
-// New functions
-void drawCommentsView();
-void drawCommentBubble(int x, int y, uint16_t color);
-bool apiComments(const String& postId);
-bool apiComment(const String& postId, const String& text);
-
-// Visual improvements
-// Feed icons positioning:
-drawHeart(11, boxY + 36, 0xF800);           // heart icon
-drawCommentBubble(40, boxY + 35, 0x07FF);   // comment bubble
-// Always show comment counter (removed if condition)
-
-// Preview icons positioning:
-drawHeart(7, 38, 0xF800);                   // heart in preview
-drawCommentBubble(34, 37, 0x07FF);          // bubble in preview
-// Dark background under icons for contrast
-
-// Layout adjustments:
-// - Author name: boxY + 0 (was boxY + 2)
-// - Post text in preview: y=18 (was y=20)
-// - Comments header: green 0x07E0
-// - Hints position: y=125 (was y=113)
-// - Loading message: (90, 85)
-// - Connected message: (90, 40)
-```
-
 ### 📈 Statistics
 
 - **Backend files:** 2 (SQL migration + Worker v0.3)
@@ -340,164 +350,6 @@ drawCommentBubble(34, 37, 0x07FF);          // bubble in preview
 - **New database tables:** 1
 - **Visual fixes:** 8
 - **Development time:** ~3 hours
-
----
-
-### 📝 Detailed Changes Log (Oct 28, 2025)
-
-#### **Phase 1: UI Improvements**
-- ✅ Fn+arrows for cursor navigation (`,` `/` available in text)
-- ✅ Post confirmation dialog with preview
-- ✅ Username change confirmation
-- ✅ Text visible immediately when editing
-- ✅ Author name in cyan with dark background
-
-#### **Phase 2: Backend (Comments)**
-- ✅ SQL migration: `BACKEND_COMMENTS_MIGRATION.sql`
-- ✅ Worker v0.3: `workerCloudflare_v0.3.js`
-- ✅ API endpoints: GET/POST comments
-- ✅ Triggers for auto-updating comment_count
-- ✅ Rate limiting: 10 seconds between comments
-
-#### **Phase 3: Client (Comments)**
-- ✅ Comment structure and variables
-- ✅ API functions: `apiComments()`, `apiComment()`
-- ✅ Parsing comments field in all endpoints
-- ✅ `drawCommentBubble()` icon function
-- ✅ `drawCommentsView()` full screen
-- ✅ Keyboard: C to open, ESC to close
-- ✅ Keyboard: Fn+Enter to write comment
-- ✅ Scroll support (; . keys)
-- ✅ Comment confirmation dialog
-- ✅ Info window updated with [C] hint
-
-#### **Phase 4: Visual Polish**
-- ✅ Comment counter always visible (💬0)
-- ✅ Icons in comments preview (heart + bubble)
-- ✅ Icons lowered by 2px for better alignment
-- ✅ Comments header in green (0x07E0)
-- ✅ Author name at top of box (boxY + 0)
-- ✅ Centered "Connected!" message
-- ✅ Centered "Loading..." message
-- ✅ Hints moved down in comments view
-- ✅ Preview text spacing adjusted
-
-#### **Files Created/Modified**
-**Backend:**
-- `BACKEND_COMMENTS_MIGRATION.sql` (new)
-- `workerCloudflare_v0.3.js` (new)
-
-**Client:**
-- `DEV_MicroCast_v0.1.ino` (modified ~220 lines)
-
-**Documentation:**
-- `STAGE1_COMPLETE.md` (new)
-- `STAGE1_FIXES.md` (new)
-- `STAGE2_BACKEND_DEPLOY.md` (new)
-- `STAGE2_SUMMARY.md` (new)
-- `STAGE3_COMPLETE.md` (new)
-- `STAGE3_PROGRESS.md` (new)
-- `STAGE3_VISUAL_FIXES.md` (new)
-- `READY_TO_TEST.md` (new)
-- `CHANGELOG_v0.3.md` (updated)
-
----
-
-## v0.2 - Sections Update (Previous)
-
-### 🆕 New Features
-- Three sections: NEW, TOP, YOU
-- Info window with quick help
-- Profile with Total Likes and Posts count
-- Silent feed refresh on likes
-
-### ✨ Improvements
-- Section buttons with navigation
-- Better UI layout
-- Username display limit (12 chars)
-
----
-
-## v0.1 - Initial Release (Previous)
-
-### 🆕 New Features
-- Basic feed timeline
-- Post creation
-- Like/unlike system
-- Username registration
-- WiFi setup
-- Device ID tracking
-
----
-
-## 🎯 Migration Guide v0.2 → v0.3
-
-### **Backend:**
-1. Run SQL migration: `BACKEND_COMMENTS_MIGRATION.sql`
-2. Update Worker: `workerCloudflare_v0.3.js`
-3. Test APIs with curl
-
-### **Client:**
-1. Upload new firmware: `DEV_MicroCast_v0.1.ino`
-2. Version should show: **beta0.2**
-
-### **No data loss:**
-- All existing posts preserved
-- All existing likes preserved
-- All users preserved
-- New comment_count initialized to 0
-
----
-
-## 📝 Breaking Changes
-
-**None!** Fully backward compatible.
-
-Old clients (v0.1, v0.2) will continue to work, but won't see:
-- Comment counts on posts
-- Comment viewing/posting features
-
----
-
-## 🐛 Known Issues
-
-None reported. Please test and report!
-
----
-
-## 🚀 Next Version Ideas
-
-### **Possible v0.4 features:**
-- [ ] Delete own comments
-- [ ] Edit own posts/comments (within 5 minutes)
-- [ ] Notifications indicator
-- [ ] User mentions (@username)
-- [ ] Hashtags (#topic)
-- [ ] Search posts
-- [ ] Block users
-- [ ] Report spam
-
-### **UI improvements:**
-- [ ] Images/emojis support
-- [ ] Custom themes
-- [ ] Sound notifications
-- [ ] Battery indicator
-- [ ] Clock display
-
-### **Backend improvements:**
-- [ ] WebSocket for real-time updates
-- [ ] Better spam protection
-- [ ] Content moderation tools
-- [ ] User reputation system
-- [ ] Analytics dashboard
-
----
-
-**Want to contribute?** See `CONTRIBUTING.md`
-
-**Found a bug?** Open an issue on GitHub
-
-**Have an idea?** Let's discuss!
 
 ---
 

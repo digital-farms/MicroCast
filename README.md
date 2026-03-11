@@ -347,6 +347,28 @@ Access advanced settings from the **YOU** section!
 └──────────────────────────────────┘
 ```
 
+### Check Updates (OTA)
+
+Check for firmware updates wirelessly!
+
+1. Open **Settings** (S key in YOU section)
+2. Select **Check Updates**
+3. Device connects to server and checks for new firmware
+4. If update available: shows version comparison and size
+5. Confirm to install (takes 30-60 seconds)
+
+**Important:**
+- ⚠️ **Do NOT turn off device** during update!
+- ⚠️ **Keep WiFi connected** throughout the process
+- Device will **restart automatically** after successful update
+- If update fails, device continues with current version
+
+**Auto-Check:**
+- Device silently checks for updates every 24 hours
+- If update found: **green dot** appears next to version in header
+- **NEW!** badge appears on Check Updates in Settings menu
+- No action required until you're ready to update
+
 ### Notifications Settings
 
 Configure push notifications for new posts:
@@ -690,7 +712,19 @@ A: Just pick a username - no email or password needed!
 A: Shows how many devices are registered on the network.
 
 **Q: How do I see battery level?**  
-A: Battery indicator shows in the top bar with icon and percentage. Updates automatically.
+A: Battery indicator shows in the top bar with icon and percentage. Uses voltage-based calculation for accurate readings.
+
+**Q: How do I update firmware?**  
+A: Go to YOU section → S (Settings) → Check Updates. If update is available, follow the prompts. Don't turn off the device during update!
+
+**Q: What does the green dot next to version mean?**  
+A: A firmware update is available. Go to Settings → Check Updates to install it.
+
+**Q: Why are some usernames in different colors?**  
+A: MicroCast has a role system: red = admin, yellow = OG (early adopter/VIP), cyan = regular user. Colors are assigned by the platform.
+
+**Q: Why do long posts show "..." at the end?**  
+A: Posts longer than 3 lines are truncated in the feed with "..." indicator. Open comments (C key) to see the full text.
 
 **Q: How do I manage notifications?**  
 A: Press **S** in YOU section → Settings → Notifications. Configure interval, sound, LED.
@@ -740,9 +774,19 @@ MicroCast is all about simple, quick communication.
 
 ---
 
-*MicroCast v0.6 - Made for M5Cardputer community*
+*MicroCast v0.7 - Made for M5Cardputer community*
 
-**New in v0.6:**
+**New in v0.7:**
+- 📡 **OTA Updates!** Check for firmware updates wirelessly from Settings
+- 🔄 **Auto Update Check** — silent background check every 24h, green dot indicator in header
+- 🎨 **Colored Nicknames!** Admin (red), OG (yellow), default (cyan) — role-based name colors
+- ⏰ **Fixed Post Timestamps** — posts no longer always show "now", uses server time for accuracy
+- 📝 **Full Post Text in Comments** — post text is fully visible when viewing comments (dynamic height)
+- ✂️ **Truncation Indicator** — long posts show "..." in feed when text doesn't fit
+- 🔋 **Improved Battery Accuracy** — voltage-based calculation with smoothing for more accurate readings
+- 📍 **UI Fix** — OTA indicator no longer overlaps battery display
+
+**Previous (v0.6):**
 - 🔐 **Recovery Code System!** Save your account with a backup code
 - 🔄 **Account Restore!** Recover username after device reset
 - 🛡️ **Secure Design!** Code shown only on your device
@@ -753,10 +797,10 @@ MicroCast is all about simple, quick communication.
 - 🎨 **Clean layout** — large square QR left, text on right; Telegram (cyan), Reddit (orange)
 - ⚙️ **Settings Menu** (YOU → S)
 - 🔔 **Notifications** (intervals, sound, LED)
-- 📡 **Multi‑WiFi** (до 5 сетей, авто‑подключение)
-- 📛 **Unread Badge** на кнопке NEW
-- 🔋 **Battery Level** в верхней строке
-- 📜 **Full Comment Scrolling** до 120 символов
+- 📡 **Multi‑WiFi** (up to 5 networks, auto-connect)
+- 📛 **Unread Badge** on NEW section button
+- 🔋 **Battery Level** in header bar
+- 📜 **Full Comment Scrolling** up to 120 characters
 
 **Previous (v0.4):**
 - 📜 **Scrollable comments!** Read full long comments with left/right arrows

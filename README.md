@@ -470,7 +470,66 @@ If red, press **N** to add/connect to a network.
 
 ---
 
-## 🔧 Troubleshooting
+## � Web Terminal (NEW!)
+
+Control your MicroCast from your computer browser!
+
+### What is Web Terminal?
+
+The Web UI lets you use MicroCast from your browser via USB connection — no need to touch the device buttons!
+
+**Features:**
+- 📡 **Full feed browsing** — NEW, TOP, YOU sections
+- 👤 **Profile with your posts** — see all your posts in one place
+- 📝 **Write posts** — compose from keyboard
+- 💬 **Comments** — view and like posts
+- 🔔 **Browser notifications** — get desktop alerts for new posts
+- 🎨 **Pixel sci-fi styling** — matches your device's look exactly
+
+### Setup
+
+1. **Connect Cardputer** to PC via USB cable
+2. **Open Web UI:**
+   - Open `https://microcast.online/` in Chrome or Edge
+3. **Click [CONNECT]** and select your Cardputer from the list
+4. **Grant permissions** if you want notifications
+5. **Done!** Use your mouse or keyboard to navigate
+
+### Web UI Controls
+
+| Action | How to |
+|--------|--------|
+| Connect | Click **[CONNECT]** button |
+| Switch tabs | Click tab buttons (► NEW, ► TOP, ► YOU) |
+| Refresh | Click **[R] REFRESH** |
+| Like post | Click **♥** button on post |
+| View comments | Click on post card |
+| Write post | Click **+ NEW POST** tab |
+| Settings | Click **[⚙]** gear icon |
+| Notifications | Enable in settings panel |
+
+### Notification Settings
+
+Click the **[⚙]** gear icon to configure:
+- ✅ Enable/disable notifications
+- 🔊 Play sound (synthetic beep)
+- 👤 Include my own posts
+- ⏱️ Check interval: 30s / 60s / 2min / 5min / OFF
+
+**Smart silence:** When you're actively viewing the NEW feed, notifications are silent — no sound, no desktop popup. Just the feed updates automatically!
+
+### Identicons
+
+Your avatar (identicon) is generated from your device_id using the same algorithm as the device — they match perfectly between web and Cardputer!
+
+**Colors:**
+- 🔵 Cyan — regular users
+- 🟡 Yellow — OG / VIP users
+- 🔴 Red — admin users
+
+---
+
+## � Troubleshooting
 
 ### "Username may be taken"
 **Problem:** Someone else is using that name  
@@ -738,6 +797,21 @@ A: No! In v0.5, **N** just adds a new network without disconnecting.
 **Q: How do I read a comment that's 120 characters long?**  
 A: Select it with **; .** (green frame appears), then scroll with **, /** arrows. All text is accessible!
 
+**Q: Can I use MicroCast from my computer?**  
+A: Yes! Connect via USB and open `dev_tools/web_ui/index.html` in Chrome/Edge. Full control through Web Serial API!
+
+**Q: Do I need to install anything for Web UI?**  
+A: No! Just open the HTML file in Chrome or Edge. Works on Windows, macOS, Linux.
+
+**Q: Will Web UI work if my device has no WiFi?**  
+A: Web UI requires the device to have WiFi (for API calls), but your PC just needs USB connection to the Cardputer.
+
+**Q: How do notifications work in Web UI?**  
+A: Click the **[⚙]** gear icon, enable notifications, grant browser permission. You'll get desktop alerts even with tab minimized!
+
+**Q: Why do I need Chrome/Edge for Web UI?**  
+A: Web Serial API is only supported in Chromium-based browsers (Chrome, Edge, Opera). Firefox and Safari don't support it yet.
+
 ---
 
 ## 🆘 Need Help?
@@ -774,7 +848,15 @@ MicroCast is all about simple, quick communication.
 
 ---
 
-*MicroCast v0.7 - Made for M5Cardputer community*
+*MicroCast v0.9 - Made for M5Cardputer community*
+
+**New in v0.9 — Web Terminal Update!**
+- 🔌 **Web Serial Bridge** — control your Cardputer from browser via USB! No firmware flashing needed
+- 🌐 **Full Web UI** — pixel sci-fi styled interface: feed, profile, posts, likes, comments in browser
+- 🔔 **Browser Notifications** — desktop alerts for new posts even with minimized tab, settings panel with sound
+- 📊 **MY_POSTS in Profile** — see your last posts in YOU section (both device and web)
+- 🎨 **Matching Identicons** — avatars now identical between device and web (fixed DJB2 algorithm)
+- 🎨 **Synced UI Colors** — web interface uses same colors as device: cyan, yellow, green glow effects
 
 **New in v0.7:**
 - 📡 **OTA Updates!** Check for firmware updates wirelessly from Settings

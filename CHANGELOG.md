@@ -1,5 +1,45 @@
 # 📋 MicroCast Changelog
 
+## v0.9 - Web Terminal Update (2025-04-30)
+
+### 🆕 New Features
+
+#### **Web Serial Bridge**
+🔌 **USB Control from Browser** — manage your Cardputer without touching the firmware
+- Connect via USB and control everything through Web Serial API
+- JSON-line protocol at 115200 baud
+- Commands: ping, feed, best, profile (with posts!), comments, post, like, comment, change_name
+- Forward declaration fixes for bridge compilation
+
+#### **Web UI (dev_tools/web_ui/)**
+🌐 **Full Web Interface** — pixel sci-fi styled web client
+- **NEW** tab — latest posts with real-time updates
+- **TOP** tab — most liked posts
+- **YOU** tab — profile with your posts and stats
+- **Compose** — write posts from browser
+- **Comments** — view and like posts, read comments
+- Pixel-perfect styling: cyan (#00FFFF), yellow (#FFFF00), red (#FF3333), green glow
+- Scanlines CRT effect, cut-corner panels, VT323 + Press Start 2P fonts
+- Fully responsive layout
+
+#### **Browser Notifications**
+🔔 **Desktop Notifications for New Posts**
+- System notifications even when tab is minimized
+- Title badge: `(3) MicroCast // Web Terminal`
+- Tab badge on NEW button — red pulsing counter
+- Global notification badge in topbar
+- Settings panel (⚙️): enable/disable, sound on/off, self-posts filter, check interval (30s-5min)
+- Smart silence — no sound/notification when actively viewing NEW feed
+- Synthetic beep via Web Audio API (no external files)
+- localStorage for settings persistence
+
+#### **User Posts in Profile**
+📊 **MY_POSTS Section** — see your last posts in YOU section
+- Device: posts shown in YOU section profile view
+- Web: dedicated MY_POSTS list under profile stats
+- Click to view comments, like posts
+- Posts cached with feed items
+
 ## v0.7 - OTA & Roles Update (2025-11-11)
 
 ### 🆕 New Features

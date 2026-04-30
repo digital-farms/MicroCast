@@ -845,6 +845,7 @@ MicroCast is all about simple, quick communication.
 - ❌ Don't post mean things
 
 **Enjoy your pocket social network! 📱✨**
+<<<<<<< HEAD
 
 ---
 
@@ -907,3 +908,5 @@ MicroCast is all about simple, quick communication.
 - 👤 YOU section with profile stats
 - ⚡ Instant like updates (no refresh needed)
 - 🎨 Improved UI with section buttons
+=======
+>>>>>>> 9c6de46891befc25b6eb924d8bf466981446aa1d
